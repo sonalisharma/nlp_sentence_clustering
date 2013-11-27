@@ -1,0 +1,118 @@
+/* This is a stylesheet written in Sass, a language for generating CSS 
+stylesheets from sass-lang.com
+To compile: 
+ $ sass --watch <filename>.scss:<filename>.css
+*/
+/** Mixins **/
+body {
+  font-family: verdana;
+  font-size: 11.07549px;
+  height: 100%;
+  color: #666666; }
+
+ul {
+  padding: 0;
+  margin: 0px; }
+
+li {
+  list-style-type: none; }
+
+#categories {
+  float: left;
+  padding: 6.87919px;
+  margin: 4.27279px;
+  width: 310.55901px; }
+
+li.category {
+  list_style_type: none;
+  padding: 0px;
+  margin: 4.27279px;
+  cursor: default; }
+  li.category span {
+    padding: 0px;
+    margin: 4.27279px; }
+  li.category:hover {
+    background: #e9f6fe; }
+  li.category[active=false] {
+    color: #b3b3b3; }
+  li.category[active=true] {
+    color: #666666; }
+  li.category[is_pinned=true] {
+    border: 1px solid lightskyblue; }
+  li.category[is_removed=true] span.label {
+    text-decoration: line-through; }
+
+div.pane {
+  padding: 11.07549px;
+  margin: 4.27279px; }
+
+img {
+  border: none; }
+
+#search-results {
+  float: left;
+  padding: 6.87919px;
+  margin: 4.27279px;
+  width: 805px; }
+
+#input {
+  padding: 6.87919px;
+  margin: 4.27279px; }
+
+tr td {
+  padding: 17.83154px;
+  margin: 0px;
+  border-bottom: 1px solid #dddddd; }
+
+span.button.remove.category {
+  width: 11.07549px;
+  height: 11.07549px;
+  background-image: url("img/close.png");
+  background-size: 11.07549px 11.07549px;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: inline-block; }
+
+/* This is a stylesheet written in Sass, a language for generating CSS 
+stylesheets from sass-lang.com
+To compile: 
+ $ sass --watch <filename>.scss:<filename>.css
+*/
+input {
+  padding: 3px;
+  background: white !important;
+  border-radius: 0px !important;
+  -moz-border-radius: 0px !important;
+  -webkit-border-radius: 0px !important;
+  border: 1px solid #aaaaaa !important; }
+  input:focus {
+    box-shadow: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    border-radius: 0px !important;
+    -moz-border-radius: 0px !important;
+    -webkit-border-radius: 0px !important;
+    border: 1px solid blue !important; }
+
+button {
+  padding: 3px;
+  background: #eeeeee !important;
+  border-radius: 0px !important;
+  -moz-border-radius: 0px !important;
+  -webkit-border-radius: 0px !important;
+  border: 1px solid #aaaaaa !important; }
+
+.styled select {
+  padding: 3px;
+  background: white !important;
+  border-radius: 0px !important;
+  -moz-border-radius: 0px !important;
+  -webkit-border-radius: 0px !important;
+  border: 1px solid #aaaaaa !important; }
+
+option {
+  padding: 3px;
+  background: white !important; }
+  option:hover {
+    background: #aaaaaa !important; }
