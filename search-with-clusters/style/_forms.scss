@@ -1,0 +1,73 @@
+/* This is a stylesheet written in Sass, a language for generating CSS 
+stylesheets from sass-lang.com
+To compile: 
+ $ sass --watch <filename>.scss:<filename>.css
+*/
+
+$form_padding: 3px;
+$form_font_family: verdana;
+$form_font_size: 20px;
+
+$form_element_background: white;
+$form_button_background: #EEE;
+$option_hover_color: #AAA;
+
+$form_element_border_color: #AAA;
+$form_element_focus_border_color: blue;
+$form_element_border_width: 1px;
+$form_element_border_radius: 0px;
+$form_element_border_style: solid;
+
+
+
+@mixin form_element_borders($width, $color, $style:solid, $radius:0px) {
+    border-radius: $radius !important;
+    -moz-border-radius: $radius !important;
+    -webkit-border-radius: $radius !important;
+    border: $width $style $color !important;
+}
+
+@mixin base_form_element($padding, $background) {
+    padding: $padding;
+    background: $background !important;
+}
+
+input {
+    @include base_form_element($form_padding, $form_element_background);
+    @include form_element_borders($form_element_border_width,
+        $form_element_border_color,
+        $form_element_border_style,
+        $form_element_border_radius);
+    &:focus {
+        box-shadow: none;
+        -moz-box-shadow:none;
+        -webkit-box-shadow:none;
+        @include form_element_borders($form_element_border_width,
+            $form_element_focus_border_color,
+            $form_element_border_style,
+            $form_element_border_radius);
+    };
+}
+
+button {
+    @include base_form_element($form_padding, $form_button_background);
+    @include form_element_borders($form_element_border_width,
+        $form_element_border_color,
+        $form_element_border_style,
+        $form_element_border_radius);
+}
+
+.styled select {
+    @include base_form_element($form_padding, $form_element_background);
+    @include form_element_borders($form_element_border_width,
+        $form_element_border_color,
+        $form_element_border_style,
+        $form_element_border_radius);
+}
+
+option {
+    @include base_form_element($form_padding, $form_element_background);
+    &:hover {
+        background: $option_hover_color !important
+    };
+}
