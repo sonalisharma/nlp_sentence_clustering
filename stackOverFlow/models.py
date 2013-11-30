@@ -14,7 +14,7 @@ class Ngrams(Base):
         self.questionid = questionid
         self.ngrams = ngrams
     def __repr__(self):
-        return '<User %s,%s>' %(self.questionid,self.ngram)
+        return '<User %s,%s>' %(self.questionid,self.ngrams)
     def returnvalue(self):
         return self.questionid
     
@@ -22,14 +22,14 @@ class Phrases(Base):
     __tablename__ = 'phrases'
     __table_args__ = {'extend_existing':True}
     id = Column(Integer,autoincrement=True, primary_key=True)
-    phrase = Column(String(3000))
+    phrase = Column(String(4000))
     count = Column(Integer)
-    questionids = Column(String(3000))
+    questionids = Column(String(20))
     
     def __init__(self,phrase,count,ids):
         self.phrase = phrase
         self.count = count
         self.questionids = ids
     def __repr__(self):
-        return '<Phrase %r>' %self.phrase
+        return '<Phrase %s,%d,%s>' %(self.phrase, self.count,self.questionids)
     

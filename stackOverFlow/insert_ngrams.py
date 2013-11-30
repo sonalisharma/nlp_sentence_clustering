@@ -43,9 +43,9 @@ def insertdata():
 	            #phrase = phrase.lower()
 	            
 	            ng=Ngrams(row[0],phrase)
-	            #print ng.ngram
-	            db_session.add(ng)
-	            db_session.commit()
+	            #print ng
+	            #db_session.add(ng)
+	            #db_session.commit()
 	            #print phrase
 	            #print "----------"
 	            phrase = phrase.lower()
@@ -59,14 +59,15 @@ def insertdata():
 	            #phrase_index[phrase] = newPhraseInfo(phrase)
 	            phrase_index[phrase]["count"] += 1
 	            phrase_index[phrase]["ids"].add(str(row[0]))
-
+	#print phrase_index.keys()
+	i = 0
 	for unique_phrases in phrase_index.keys():
 		l = list(phrase_index[unique_phrases]["ids"])
-		#print l
-		phraseids = ';'.join(l)
-		#print phraseids
+		phraseids = '*'.join(l)
+		print i
+		i+=1
 		ph = Phrases(phrase_index[str(unique_phrases)]["phrase"], phrase_index[unique_phrases]["count"], phraseids)
-		print ph.questionids
+		print ph
     	db_session.add(ph)
     	db_session.commit() 
 if __name__ == "__main__":
