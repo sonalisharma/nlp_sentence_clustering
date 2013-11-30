@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+<header>
+	<h1>Hoogle</h1>
+	<h3>This interface categorizes your search results</h3>
+<header>
+    <form method="post" action="" enctype=multipart/form-data>
+	    <p><label>Query: </label> <input class="query" type="text" name="txt_query" required>
+	    <button type="submit">Go</button></p>
+	    <div class ="content">
+	    <div class="left"> 
+	    	{% if categories %}
+	    	<ul class="entries">
+	    	<h2>Categories</h2>
+			  {% for k in categories.keys() %}
+			    <li>
+			    	<label><input id="categories" type="checkbox" name="checkbox" value={{ k }}/> {{ k }} ({{ categories[k] }})</label>
+			    </li>
+
+			  {% endfor %}
+			</ul>
+	    	{%else%}
+	    	<div id ="empty">
+	    		<h2>No results to display</h2>
+	    	</div>
+	    	{% endif %}
+	    </div>
+	    <div class ="right">
+
+	    </div>
+	   </div>
+    </form>
+{% endblock %}
