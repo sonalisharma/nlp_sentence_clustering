@@ -10,10 +10,9 @@ class Ngrams(Base):
     questionid = Column(Integer)
     ngrams = Column(String(3500))
     
-    def __init__(self,questionid,ngram):
-        self.quesionid = questionid
-        self.ngram = ngram
-        print self.quesionid 
+    def __init__(self,questionid,ngrams):
+        self.questionid = questionid
+        self.ngrams = ngrams
     def __repr__(self):
         return '<User %s,%s>' %(self.questionid,self.ngram)
     def returnvalue(self):
