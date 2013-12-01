@@ -3,14 +3,14 @@ from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from nltk.stem import WordNetLemmatizer as WNL
-from models_p import LemmaTemp, Base
+from models import LemmaTemp, Base
 
 
 def init_db():
     # import all modules here that might define models so that
     # they will be registered properly on the metadata.  Otherwise
     # you will have to import them first before calling init_db()
-    import models
+    import models_p
     Base.metadata.create_all(bind=engine)
     print Base.metadata.tables.keys()
     print Base.metadata.reflect(engine)
