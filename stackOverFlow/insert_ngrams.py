@@ -30,7 +30,6 @@ def insertdata():
 	allphrases = {}
 	phrase_index= {}
 	questions = Table('questions', metadata, autoload=True)
-	#con = engine.connect()
 	r = engine.execute('select * from questions_temp')
 	data = r.fetchall()
 	for row in data:
@@ -44,8 +43,8 @@ def insertdata():
 	            
 	            ng=Ngrams(row[0],phrase)
 	            #print ng
-	            #db_session.add(ng)
-	            #db_session.commit()
+	            db_session.add(ng)
+	            db_session.commit()
 	            #print phrase
 	            #print "----------"
 	            phrase = phrase.lower()
