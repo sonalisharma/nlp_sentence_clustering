@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Match Glass</h1>
+    <img src=""/>
+    <div id="left">
+    	<img src="static/img/ror9.jpg"/>    
+    </div>
+    <div id ="right">
+    	<form method="post" action="" enctype=multipart/form-data>
+	        <p><label>What does this look like?</label></p>
+	        <input type="radio" name="group1" value="value1"> {% option[0] %}<br>
+			<input type="radio" name="group1" value="value2" checked> {% option[1] %}<br>
+	        <p><input type="file" name="file" value="Choose File"></p>
+	        <p><button type="submit">Upload</button></p>
+	    </form>
+    </div>
+<!--<input type="button" name="btn_insert_coll" value = 'Insert a Collection'> -->
+<!--<div class="main_urls">
+<a href="{{ url_for('upload_file') }}">Insert a Collection</a>
+<br><br>
+<a href="{{ url_for('run_query') }}">Run a query</a>
+<br><br>
+</div> 
+{% if not answer %}
+No, collections present!
+{% else %}
+<p> The following collections are present so far:<p>
+
+{% endif %}
+
+	{% for collection in answer %}
+		{% if collection[0]  %}
+			{{collection[0]}}<br>
+		{% else %}
+		{% endif %}
+
+	{% endfor %}
+{% endblock %}-->
