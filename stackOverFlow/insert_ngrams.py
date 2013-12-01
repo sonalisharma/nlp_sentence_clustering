@@ -6,7 +6,6 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, backref
 
 
-
 SQLALCHEMY_DATBASE_URI='sqlite:///tutorial.db'
 engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True)
 metadata = MetaData(bind=engine)
@@ -31,7 +30,6 @@ def insertdata():
 	allphrases = {}
 	phrase_index= {}
 	questions = Table('questions', metadata, autoload=True)
-	con = engine.connect()
 	r = engine.execute('select * from questions_temp')
 	data = r.fetchall()
 	for row in data:
@@ -40,11 +38,11 @@ def insertdata():
 	    for i in range(len(ans)):
 	        for j in range(i+1, len(ans)+1):
 	            phrase = " ".join(ans[i:j])
+	            #print phrase
 	            #phrase = phrase.lower()
-	            ng = Ngrams(row[0],phrase)
-	            print ng.returnvalue()
-	            print ng.questionid
-	            print ng.ngrams
+	            
+	            ng=Ngrams(row[0],phrase)
+	            #print ng
 	            #db_session.add(ng)
 	            #db_session.commit()
 	            #print phrase
@@ -60,13 +58,17 @@ def insertdata():
 	            #phrase_index[phrase] = newPhraseInfo(phrase)
 	            phrase_index[phrase]["count"] += 1
 	            phrase_index[phrase]["ids"].add(row[0])
-
+	#print phrase_index.keys()
+	i = 0
 	for unique_phrases in phrase_index.keys():
-		ph = Phrases(phrase_index[unique_phrases], phrase_index[unique_phrases]["count"],
-			phrase_index[unique_phrases]["ids"])
-		#print ph.count
-    #db_session.add(ph)
-    #db_session.commit() 
+		l = list(phrase_index[unique_phrases]["ids"])
+		phraseids = '*'.join(l)
+		print i
+		i+=1
+		ph = Phrases(phrase_index[str(unique_phrases)]["phrase"], phrase_index[unique_phrases]["count"], phraseids)
+		print ph
+    	db_session.add(ph)
+    	db_session.commit() 
 if __name__ == "__main__":
 	insertdata()
 
