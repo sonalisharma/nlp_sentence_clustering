@@ -71,7 +71,7 @@ def insertdata():
     	db_session.commit() 
 
 if __name__=='__main__':
-    SQLALCHEMY_DATBASE_URI='sqlite:///Database/tutorial.db'
+    SQLALCHEMY_DATBASE_URI='sqlite:///tutorial.db'
     engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True)
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
