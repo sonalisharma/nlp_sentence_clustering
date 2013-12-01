@@ -14,7 +14,7 @@
 	    	<h2>Categories</h2>
 			  {% for k in categories.keys() %}
 			    <li>
-			    	<label><input id="categories" type="checkbox" name="checkbox" value={{ k }}/> {{ k }} ({{ categories[k] }})</label>
+			    	<label><input id="categories" type="checkbox" name="checkbox" value={{ k }}/> {{ k }} ({{ categories[k]["freq"] }})</label>
 			    </li>
 
 			  {% endfor %}
@@ -26,6 +26,7 @@
 	    	{% endif %}
 	    </div>
 	    <div class ="right">
+	    	
 
 	    </div>
 	   </div>

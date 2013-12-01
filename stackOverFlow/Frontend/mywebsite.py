@@ -24,23 +24,51 @@ metadata = MetaData(bind=eng)
 
 @app.route("/", methods=['GET', 'POST'])
 def getuser():
-    options=["Bird","Face"]
-    print options
     if request.method == 'POST':
         return redirect(url_for('getresults')) 
-    return render_template('index.html',options=options)
+    return render_template('index.html')
 
-def getusers():
-    categories = {"cat1":10,"cat2":20,"cat3":9,"cat4":8,"cat5":2}
+def getdata():
+    categories = {"cat1":{"sent":["This is the first cat1 sentence",
+                                   "This is the second cat1 sentence",
+                                   "This is the third cat1 sentence",
+                                   "This is the fourth cat1 sentence"],"freq":20},
+                  "cat2":{"sent":["This is the first cat2 sentence",
+                                   "This is the second cat2 sentence",
+                                   "This is the third cat2 sentence",
+                                   "This is the fourth cat2 sentence"],"freq":15},
+                  "cat3":{"sent":["This is the first cat3 sentence",
+                                   "This is the second cat3 sentence",
+                                   "This is the third cat3 sentence",
+                                   "This is the fourth cat3 sentence"],"freq":14},
+                  "cat4":{"sent":["This is the first cat4 sentence",
+                                   "This is the second cat4 sentence",
+                                   "This is the third cat4 sentence",
+                                   "This is the fourth cat4 sentence"],"freq":12},
+                  "cat5":{"sent":["This is the first cat5 sentence",
+                                   "This is the second cat5 sentence",
+                                   "This is the third cat5 sentence",
+                                   "This is the fourth cat5 sentence"],"freq":10}}
     #con =  eng.connect()
     #query_template = "select * from Matchglass WHERE status = active"
     #active_users = con.execute(query)
     return categories
 
+@app.route('/data', methods=['GET', 'POST'])
+def data():
+    print "here inside data"
+    list_name = request.args.get("input_value")
+    cat = getdata()
+    print "listname"
+    print list_name
+    print "/listname"
+    #print cat[list_name]
+    #print list_name
+    return render_template('index.html',categories=cat)
 
 @app.route('/results')
 def getresults():
-    category = getusers()
+    category = getdata()
     return render_template('index.html',categories=category)
 
 @app.route('/user/<name>')
