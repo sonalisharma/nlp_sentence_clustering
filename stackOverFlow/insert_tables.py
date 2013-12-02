@@ -7,6 +7,14 @@ from sqlalchemy.orm import relationship, backref
 from nltk.stem import WordNetLemmatizer as WNL
 from models import LemmaTemp,Base
 
+wnl=WNL()
+
+def lemmatize(query):
+	print query
+	wordlist =  [wnl.lemmatize(word) for word in query]
+	print wordlist
+	return " ".join(wordlist)
+
 def init_db():
     # import all modules here that might define models so that
     # they will be registered properly on the metadata.  Otherwise
@@ -44,13 +52,11 @@ def insert_db():
 		db_session.commit()
 
 def insertdata():
-	import models
-	
+	import models	
 	from models import Ngrams
 	from models import Phrases
 	allphrases = {}
 	phrase_index= {}
-	questions = Table('questions', Base.metadata, autoload=True)
 	r = engine.execute('select * from questions_temp')
 	data = r.fetchall()
 	for row in data:
@@ -59,7 +65,11 @@ def insertdata():
 	    for i in range(len(ans)):
 	        for j in range(i+1, len(ans)+1):
 	            phrase = " ".join(ans[i:j])
-	            ng=Ngrams(row[0],phrase)
+	            lemmaphrase = lemmatize(ans[i:j])
+	            ng=Ngrams(row[0],phrase, lemmaphrase)
+	            print "------------"
+	            print ng.lemmangrams
+	            print "------------"
 	            db_session.add(ng)
 	            db_session.commit()
 	            phrase = phrase.lower()
@@ -72,10 +82,10 @@ def insertdata():
 	for unique_phrases in phrase_index.keys():
 		l = list(phrase_index[unique_phrases]["ids"])
 		phraseids = '*'.join(l)
-		print i
+		#print i
 		i+=1
 		ph = Phrases(phrase_index[str(unique_phrases)]["phrase"], phrase_index[unique_phrases]["count"], phraseids)
-		print ph
+		#print ph
     	db_session.add(ph)
     	db_session.commit() 
 
