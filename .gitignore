@@ -1,3 +1,7 @@
 /.idea/
+<<<<<<< HEAD
 tutorial.db
+=======
+
+>>>>>>> refs/heads/shubham
 *.pyc
