@@ -1,18 +1,12 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, backref
-<<<<<<< HEAD
 from sqlalchemy.ext.declarative import declarative_base
 
-Base=declarative_base()
-
-Base = declarative_base()
-=======
-#from insert_clean_so_data import Base
 
 Base = declarative_base()
 
->>>>>>> refs/heads/shubham
+
 class Ngrams(Base):
     __tablename__ = 'ngrams'
     __table_args__ = {'extend_existing':True}
@@ -45,8 +39,8 @@ class Phrases(Base):
         self.questionids = ids
     def __repr__(self):
         return '<Phrase %s,%d,%s>' %(self.phrase, self.count,self.questionids)
-<<<<<<< HEAD
-    
+
+
 class LemmaTemp(Base):
     __tablename__ = 'LEMMA_TEMP'
     id=Column(Integer,primary_key=True,autoincrement=True)
@@ -62,7 +56,6 @@ class LemmaTemp(Base):
 
     def __repr__(self):
         return '<Lemma %r>' %self.lemma
-=======
 
 
 class Questions(Base):
@@ -102,4 +95,3 @@ class Answers(Base):
 
     def return_value(self):
         return self.answer_text
->>>>>>> refs/heads/shubham
