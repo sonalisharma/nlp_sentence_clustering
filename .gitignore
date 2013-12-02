@@ -1,3 +1,7 @@
 /.idea/
 tutorial.db
 *.pyc
+
+/stackOverFlow/.DS_Store
+
+.DS_Store
