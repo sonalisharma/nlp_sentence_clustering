@@ -6,7 +6,7 @@ from BeautifulSoup import BeautifulSoup
 import string  # for removing punctuations
 from models import Base
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///tutorial_pp.db'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///tutorial_pp2.db'
 engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True)
 metadata = MetaData(bind=engine)
 Session = sessionmaker(bind=engine)
@@ -56,14 +56,15 @@ def remove_stop_words(sentence):
 
 
 def clean_answers():
-    from models import Answers
-    for ans in session.query(Answers).all():
-        clean_html_answer = clean_html(ans.answer_text)
+    from models import Questions
+    for ques in session.query(Questions).all():
+        print ques.id
+        clean_html_answer = clean_html(ques.answer_text)
         wo_punctuation_answer = remove_punctuation(clean_html_answer)
         wo_stop_words_answer = remove_stop_words(wo_punctuation_answer)
-        ans.answer_text = unicode(wo_punctuation_answer, 'utf8')
-        ans.answer_wo_stop_words = unicode(wo_stop_words_answer, 'utf8')
-        session.commit()
+        ques.answer_text = unicode(wo_punctuation_answer, 'utf8')
+        ques.answer_wo_stop_words = unicode(wo_stop_words_answer, 'utf8')
+    session.commit()
 
 
 # __DEPRECATED__
@@ -99,8 +100,6 @@ def read_xml():
                     pass
             elif int(post.attributes['PostTypeId'].value) == 2:
                 try:
-                    #TODO remove HTML and punctuations
-                    #TODO remove stop words and punctuations
                     print post.attributes['Id'].value
                     a = Answers(ans_id=int(post.attributes['Id'].value),
                                 ans_text=post.attributes['Body'].value)
@@ -109,5 +108,21 @@ def read_xml():
                 except:
                     pass
 
+
+def merge_tables():
+    from models import Questions
+    from models import Answers
+    for ques in session.query(Questions).all():
+        print ques.id
+        ans = session.query(Answers).filter(Answers.id == ques.answer_id).first()
+        if ans:
+            ques.answer_text = ans.answer_text
+            ques.answer_wo_stop_words = ans.answer_wo_stop_words
+        else:
+            session.delete(ques)
+    session.commit()
+
 if __name__ == "__main__":
     read_xml()
+    merge_tables()
+    clean_answers()
