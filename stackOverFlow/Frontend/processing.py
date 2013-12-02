@@ -21,25 +21,16 @@ def fetchphrases(query): #looks like
 	query_nostopwords = removestopwords(query)
 	query_lemmatized = lemmatize(query_nostopwords) #look like
 	phraseids = []
+	ngramids=[]
 	for word in query_lemmatized.split():
-		print "**************"
-		print word
-		print "**************"
 		query_ngram = "select id from ngrams where lower(lemmangrams) like lower('%{}%')".format(word)
-		print query_ngram
 		con = it.engine.execute(query_ngram)
 		rows_phrase = con.fetchall()
 		if rows_phrase:
-			print "------------"
-			print rows_phrase
-			print "------------"
 			ngramids = list(set([str(i[0]) for i in rows_phrase]))
-		print "@@@@@@@@@@@@@@@@@@@"
-		print ngramids
-		print "@@@@@@@@@@@@@@@@@@@"
 		phraseids.extend(ngramids)
 		phraseids = list(set(phraseids))
-	categorize(phraseids)
+	return categorize(phraseids)
 
 def categorize(phraseids):
 	#print phraseids

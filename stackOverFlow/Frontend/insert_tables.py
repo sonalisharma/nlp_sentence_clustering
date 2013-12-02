@@ -8,7 +8,7 @@ from nltk.stem import WordNetLemmatizer as WNL
 from models import LemmaTemp,Base
 
 wnl=WNL()
-SQLALCHEMY_DATBASE_URI='sqlite:///Database/tutorial.db'
+SQLALCHEMY_DATBASE_URI='sqlite:///tutorial.db'
 engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
@@ -26,8 +26,6 @@ def init_db():
     import models
     Base.metadata.bind=engine
     Base.metadata.create_all(bind=engine)
-    #print Base.metadata.tables.keys()
-    #print Base.metadata.reflect(engine)
 
 
 def newPhraseInfo(phrase):
