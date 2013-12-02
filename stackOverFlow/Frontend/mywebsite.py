@@ -5,54 +5,68 @@ from flask import render_template
 from werkzeug import secure_filename
 from flask import Flask, request, redirect, url_for
 from flask import send_from_directory   
-#from pybtex.database.input import bibtex
-from sqlalchemy import distinct
+from pybtex.database.input import bibtex
+from sqlalchemy import distinct, Table
 from itertools import izip
 from sqlalchemy import create_engine, MetaData, Table
+from sqlalchemy.orm import scoped_session,sessionmaker
+from processing import fetchphrases
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tutorial.db'
+SQLALCHEMY_DATBASE_URI='sqlite:///tutorial.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATBASE_URI
 #app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True)
+db_session = scoped_session(sessionmaker(autocommit=False,
+                                             autoflush=False,
+                                             bind=engine))
+
 db = SQLAlchemy(app)
-eng = db.create_engine("sqlite:///tutorial.db")
+
 #db.drop_all()
 #db.create_all()
 app.debug = True
-metadata = MetaData(bind=eng)
+metadata = MetaData(bind=engine)
 
 @app.route("/", methods=['GET', 'POST'])
 def getuser():
-    if request.method == 'POST':
-        return redirect(url_for('getresults')) 
+    if request.method == 'POST' and request.form is not None:
+        try:
+          query=str(request.form["txt_query"])
+          return redirect(url_for('getresults',query=query)) 
+        except:
+          print "Exception while handling user query"
+          return redirect(url_for('getresults',query="999"))
     return render_template('index.html')
 
-def getdata():
-    categories = {"cat1":{"sent":["This is the first cat1 sentence",
-                                   "This is the second cat1 sentence",
-                                   "This is the third cat1 sentence",
-                                   "This is the fourth cat1 sentence"],"freq":20},
-                  "cat2":{"sent":["This is the first cat2 sentence",
-                                   "This is the second cat2 sentence",
-                                   "This is the third cat2 sentence",
-                                   "This is the fourth cat2 sentence"],"freq":15},
-                  "cat3":{"sent":["This is the first cat3 sentence",
-                                   "This is the second cat3 sentence",
-                                   "This is the third cat3 sentence",
-                                   "This is the fourth cat3 sentence"],"freq":14},
-                  "cat4":{"sent":["This is the first cat4 sentence",
-                                   "This is the second cat4 sentence",
-                                   "This is the third cat4 sentence",
-                                   "This is the fourth cat4 sentence"],"freq":12},
-                  "cat5":{"sent":["This is the first cat5 sentence",
-                                   "This is the second cat5 sentence",
-                                   "This is the third cat5 sentence",
-                                   "This is the fourth cat5 sentence"],"freq":10}}
-    #con =  eng.connect()
-    #query_template = "select * from Matchglass WHERE status = active"
-    #active_users = con.execute(query)
-    return categories
+def getdata(query):
+    print "here"
+    if query is not None:
+      phrases=fetchphrases(query)
+      #loop through and get first elemet of the tuple to print the categroes
+      categories={}
+      for phrase in phrases:
+        try:
+          categories[str(phrase[0])]=([],phrase[1])
+        except UnicodeEncodeError:
+          categories[phrase[0]]=([],phrase[1])
+      #Search for each category in ngrams.lemmangrams, get question ids from ngrams 
+      #and question text from questions table
+      results={}
+      for k,v in categories.items():
+        ques=[]
+        try:
+          res = engine.execute("select q.ques_text from ngrams n join questions\
+          q on n.questionid=q.id where n.lemmangrams='{}'".format(k))
+          for r in res:   
+            ques.append(str(r['ques_text']))
+        except UnicodeEncodeError:
+          continue  
+        results[k]=(list(set(ques)),v[1]) 
+      print results
+      return results
 
 @app.route('/data', methods=['GET', 'POST'])
 def data():
@@ -62,14 +76,16 @@ def data():
     print "listname"
     print list_name
     print "/listname"
-    #print cat[list_name]
-    #print list_name
     return render_template('index.html',categories=cat)
 
-@app.route('/results')
-def getresults():
-    category = getdata()
-    return render_template('index.html',categories=category)
+@app.route('/results/<query>')
+def getresults(query):
+    if query is not None:
+      if query=='999':
+        categories=[]
+      else:
+        categories=getdata(query)
+    return render_template('index.html',categories=categories)
 
 @app.route('/user/<name>')
 def thanks(name):

@@ -4,7 +4,7 @@
 	<h1>Hoogle</h1>
 	<h3>This interface categorizes your search results</h3>
 <header>
-    <form method="post" action="" enctype=multipart/form-data>
+    <form method="post" action="/" enctype=multipart/form-data>
 	    <p><label>Query: </label> <input class="query" type="text" name="txt_query" required>
 	    <button type="submit">Go</button></p>
 	    <div class ="content">
@@ -12,9 +12,10 @@
 	    	{% if categories %}
 	    	<ul class="entries">
 	    	<h2>Categories</h2>
-			  {% for k in categories.keys() %}
+			  {% for k,v in categories.items() %}
 			    <li>
-			    	<label><input id="categories" type="checkbox" name="checkbox" value={{ k }}/> {{ k }} ({{ categories[k]["freq"] }})</label>
+			    	<label><input id="categories" type="checkbox" name="checkbox" value={{ k }}/> {{ k }} 
+			    	({{ v[1] }})</label>
 			    </li>
 
 			  {% endfor %}
@@ -29,14 +30,10 @@
 	    	{% if categories %}
 	    	<ul class="entries">
 	    	<h2>Results</h2>
-			  {% for k in categories.keys() %}
+			  {% for k,v in categories.items() %}
                 <h3>{{ k }}</h3>
 			    <li>
-                    <!--<input id="categories" type="checkbox" name="checkbox" value={{ k }}/> -->
-                    {% for sent in categories[k]['sent'] %}
-                        <label>{{ sent }}</label>
-                    {% endfor %}
-
+				<label>{{ v[0] }}</label>
 			    </li>
 
 			  {% endfor %}
