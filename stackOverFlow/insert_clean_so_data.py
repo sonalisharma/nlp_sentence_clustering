@@ -1,21 +1,24 @@
+from xml.dom import minidom  # read XML file
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from BeautifulSoup import BeautifulSoup
 import string  # for removing punctuations
+from models import Base
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///tutorial.db'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///tutorial_pp.db'
 engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True)
 metadata = MetaData(bind=engine)
 Session = sessionmaker(bind=engine)
 session = Session()
-db_session = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=engine))
-Base = declarative_base()
-Base.query = db_session.query_property()
-
+#db_session = scoped_session(sessionmaker(autocommit=False,
+#                                         autoflush=False,
+#                                         bind=engine))
+#Base = declarative_base()
+#Base.query = db_session.query_property()
 Base.metadata.create_all(bind=engine)
+
+XML_files = ['posts.xml']
 
 VALID_TAGS = ['p', 'a', 'h2', 'blockquote', 'hr', 'em', 'strong']
 INVALID_TAGS = ['CODE', 'ul', 'ol', 'pre']
@@ -49,18 +52,62 @@ def remove_punctuation(sentence):
 
 
 def remove_stop_words(sentence):
-    return ' '.join([word for word in sentence.split() if word not in cached_stop_words])
+    return ' '.join([word for word in sentence.split() if word.lower() not in cached_stop_words])
 
 
+def clean_answers():
+    from models import Answers
+    for ans in session.query(Answers).all():
+        clean_html_answer = clean_html(ans.answer_text)
+        wo_punctuation_answer = remove_punctuation(clean_html_answer)
+        wo_stop_words_answer = remove_stop_words(wo_punctuation_answer)
+        ans.answer_text = unicode(wo_punctuation_answer, 'utf8')
+        ans.answer_wo_stop_words = unicode(wo_stop_words_answer, 'utf8')
+        session.commit()
+
+
+# __DEPRECATED__
 def insert_data():
     from models import Questions
-    for ques in session.query(Questions).order_by(Questions.ques_id):
+    #from models import Answers
+    for ques in session.query(Questions).filter(Questions.ques_id <= 100):
         clean_html_answer = clean_html(ques.answer_text)
         wo_punctuation_answer = remove_punctuation(clean_html_answer)
         wo_stop_words_answer = remove_stop_words(wo_punctuation_answer)
         ques.answer_text = unicode(wo_stop_words_answer, 'utf8')
         session.commit()
-        print ques.ques_id
+        print ques.answer_text
+
+
+def read_xml():
+    from models import Questions
+    from models import Answers
+    for to_read_file in XML_files:
+        xml_doc = minidom.parse(to_read_file)
+        item_list = xml_doc.getElementsByTagName('row')
+        for post in item_list:
+            if int(post.attributes['PostTypeId'].value) == 1:  # is a questions
+                try:
+                    post.attributes['AcceptedAnswerId']
+                    print post.attributes['Id'].value
+                    q = Questions(ques_id=int(post.attributes['Id'].value),
+                                  ques_text=post.attributes['Title'].value,
+                                  answer_id=post.attributes['AcceptedAnswerId'].value)
+                    session.add(q)
+                    session.commit()
+                except:  # is an answer
+                    pass
+            elif int(post.attributes['PostTypeId'].value) == 2:
+                try:
+                    #TODO remove HTML and punctuations
+                    #TODO remove stop words and punctuations
+                    print post.attributes['Id'].value
+                    a = Answers(ans_id=int(post.attributes['Id'].value),
+                                ans_text=post.attributes['Body'].value)
+                    session.add(a)
+                    session.commit()
+                except:
+                    pass
 
 if __name__ == "__main__":
-    insert_data()
+    read_xml()
