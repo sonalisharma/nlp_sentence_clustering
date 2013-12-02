@@ -5,6 +5,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from BeautifulSoup import BeautifulSoup
 import string  # for removing punctuations
 from models import Base
+import logging
+logging.root.setLevel(logging.DEBUG)
+import xml.etree.cElementTree as cElementTree
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///tutorial_pp2.db'
 engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True)
@@ -81,12 +84,50 @@ def insert_data():
 
 
 def read_xml():
+    logging.debug("read_xml entered")
     from models import Questions
     from models import Answers
+    logging.debug("models imported")
     for to_read_file in XML_files:
+        logging.debug("reading file: to_read_file")
+        i = 0
+        for event, elem in cElementTree.iterparse(to_read_file):
+            if elem.tag == "row":
+                logging.debug("element has row")
+                if int(elem.attrib['PostTypeId']) == 1:
+                    try:
+                        elem.attrib['AcceptedAnswerId']
+                        logging.debug(elem.attrib['Id'])
+                        q = Questions(ques_id=int(elem.attrib['Id']),
+                                      ques_text=elem.attrib['Title'],
+                                      answer_id=elem.attrib['AcceptedAnswerId'])
+                        session.add(q)
+                    except:
+                        pass
+                elif int(elem.attrib['PostTypeId']) == 2:
+                    try:
+                        logging.debug(elem.attrib['Id'])
+                        a = Answers(ans_id=int(elem.attrib['Id']),
+                                    ans_text=elem.attrib['Body'])
+                        session.add(a)
+                    except:
+                        pass
+            elem.clear()
+            if i > 20000:
+                session.commit()
+                i = 0
+            else:
+                i = i+1
+        session.commit()
+
+'''
+
         xml_doc = minidom.parse(to_read_file)
+        logging.debug("xml_doc = minidom.parse(to_read_file)")
         item_list = xml_doc.getElementsByTagName('row')
+        logging.debug("xml_doc.getElementsByTagName row")
         for post in item_list:
+            logging.debug("for post in item_list")
             if int(post.attributes['PostTypeId'].value) == 1:  # is a questions
                 try:
                     post.attributes['AcceptedAnswerId']
@@ -107,6 +148,7 @@ def read_xml():
                     session.commit()
                 except:
                     pass
+'''
 
 
 def merge_tables():
@@ -120,9 +162,10 @@ def merge_tables():
             ques.answer_wo_stop_words = ans.answer_wo_stop_words
         else:
             session.delete(ques)
+    session.query(Answers).all().delete()  # reduce the size of the db
     session.commit()
 
 if __name__ == "__main__":
     read_xml()
-    merge_tables()
-    clean_answers()
+    #merge_tables()
+    #clean_answers()
