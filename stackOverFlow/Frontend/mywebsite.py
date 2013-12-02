@@ -5,7 +5,7 @@ from flask import render_template
 from werkzeug import secure_filename
 from flask import Flask, request, redirect, url_for
 from flask import send_from_directory   
-from pybtex.database.input import bibtex
+#from pybtex.database.input import bibtex
 from sqlalchemy import distinct
 from itertools import izip
 from sqlalchemy import create_engine, MetaData, Table
