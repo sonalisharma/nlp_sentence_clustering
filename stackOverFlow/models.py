@@ -12,14 +12,14 @@ class Ngrams(Base):
     id = Column(Integer,autoincrement=True, primary_key=True)
     questionid = Column(Integer)
     ngrams = Column(String(3500))
+    lemmangrams = Column(String(3500))
     
-    def __init__(self,questionid,ngrams):
+    def __init__(self,questionid,ngrams,lemmangrams):
         self.questionid = questionid
         self.ngrams = ngrams
+        self.lemmangrams = lemmangrams
     def __repr__(self):
-        return '<User %s,%s>' %(self.questionid,self.ngrams)
-    def returnvalue(self):
-        return self.questionid
+        return '<Ngrams %s,%s>' %(self.questionid,self.ngrams,self.lemmangrams)
     
 class Phrases(Base):
     __tablename__ = 'phrases'
