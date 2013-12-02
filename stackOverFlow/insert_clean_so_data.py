@@ -1,7 +1,8 @@
-from sqlalchemy import create_engine, MetaData, update, Table
+from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from BeautifulSoup import BeautifulSoup
+import string  # for removing punctuations
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///tutorial.db'
 engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True)
@@ -23,6 +24,15 @@ unhandled tags:
 
 """
 
+# reading stop words
+stop_word_file = "ir_dcs_gla_ac_uk_stop_words.txt"
+cached_stop_words = []
+
+with open(stop_word_file) as f:
+    contents = f.readlines()
+    for word in contents:
+        cached_stop_words.append(word.strip())
+
 
 def clean_html(value):
     soup = BeautifulSoup(value)
@@ -34,15 +44,22 @@ def clean_html(value):
     return soup.renderContents()
 
 
+def remove_punctuation(sentence):
+    return sentence.translate(string.maketrans("",""), string.punctuation)
+
+
+def remove_stop_words(sentence):
+    return ' '.join([word for word in sentence.split() if word not in cached_stop_words])
+
+
 def insert_data():
     from models import Questions
     for ques in session.query(Questions).order_by(Questions.ques_id):
-        clean_answer = clean_html(ques.answer_text)
-        #print clean_answer
-        ques.answer_text = unicode(clean_answer, 'utf8')
+        clean_html_answer = clean_html(ques.answer_text)
+        wo_punctuation_answer = remove_punctuation(clean_html_answer)
+        wo_stop_words_answer = remove_stop_words(wo_punctuation_answer)
+        ques.answer_text = unicode(wo_stop_words_answer, 'utf8')
         session.commit()
-        #update(Questions).where(Questions.c.ques_id == ques.ques_id).values(answer_text=clean_answer)
-        #db_session.commit()
         print ques.ques_id
 
 if __name__ == "__main__":
