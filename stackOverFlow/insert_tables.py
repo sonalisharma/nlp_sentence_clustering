@@ -8,6 +8,12 @@ from nltk.stem import WordNetLemmatizer as WNL
 from models import LemmaTemp,Base
 
 wnl=WNL()
+SQLALCHEMY_DATBASE_URI='sqlite:///Database/tutorial.db'
+engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True)
+db_session = scoped_session(sessionmaker(autocommit=False,
+                                             autoflush=False,
+                                             bind=engine))
+Base.query = db_session.query_property()
 
 def lemmatize(query):
 	print query
@@ -60,16 +66,16 @@ def insertdata():
 	r = engine.execute('select * from questions_temp')
 	data = r.fetchall()
 	for row in data:
-	    answer = row[2]
+	    answer = row[5]
 	    ans = answer.split()
 	    for i in range(len(ans)):
 	        for j in range(i+1, len(ans)+1):
 	            phrase = " ".join(ans[i:j])
 	            lemmaphrase = lemmatize(ans[i:j])
 	            ng=Ngrams(row[0],phrase, lemmaphrase)
-	            print "------------"
-	            print ng.lemmangrams
-	            print "------------"
+	            #print "------------"
+	            #print ng.lemmangrams
+	            #print "------------"
 	            db_session.add(ng)
 	            db_session.commit()
 	            phrase = phrase.lower()
@@ -90,14 +96,8 @@ def insertdata():
     	db_session.commit() 
 
 if __name__=='__main__':
-    SQLALCHEMY_DATBASE_URI='sqlite:///Database/tutorial.db'
-    engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True)
-    db_session = scoped_session(sessionmaker(autocommit=False,
-                                             autoflush=False,
-                                             bind=engine))
-    Base.query = db_session.query_property()
-    init_db()
-    Base.metadata.bind=engine
-    insert_db()
-    insertdata()
+	init_db()
+	Base.metadata.bind=engine
+	insertdata()
+	insert_db()
 
