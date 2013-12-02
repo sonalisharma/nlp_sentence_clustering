@@ -5,3 +5,4 @@ tutorial.db
 
 >>>>>>> refs/heads/shubham
 *.pyc
+.DS_Store
