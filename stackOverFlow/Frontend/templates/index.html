@@ -26,9 +26,27 @@
 	    	{% endif %}
 	    </div>
 	    <div class ="right">
-	    	
+	    	{% if categories %}
+	    	<ul class="entries">
+	    	<h2>Results</h2>
+			  {% for k in categories.keys() %}
+                <h3>{{ k }}</h3>
+			    <li>
+                    <!--<input id="categories" type="checkbox" name="checkbox" value={{ k }}/> -->
+                    {% for sent in categories[k]['sent'] %}
+                        <label>{{ sent }}</label>
+                    {% endfor %}
 
+			    </li>
+
+			  {% endfor %}
+			</ul>
+	    	{%else%}
+	    	<div id ="empty">
+	    		<h2>No results to display</h2>
+	    	</div>
+	    	{% endif %}
 	    </div>
-	   </div>
+	    </div>
     </form>
 {% endblock %}
