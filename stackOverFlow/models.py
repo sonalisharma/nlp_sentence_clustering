@@ -19,7 +19,9 @@ class Ngrams(Base):
         self.ngrams = ngrams
         self.lemmangrams = lemmangrams
     def __repr__(self):
-        return '<Ngrams %s,%s>' %(self.questionid,self.ngrams,self.lemmangrams)
+        return '<Ngrams %s,%s>' %(self.id,self.ngrams)
+    def returnvalue(self):
+        return self.questionid
     
 class Phrases(Base):
     __tablename__ = 'phrases'
