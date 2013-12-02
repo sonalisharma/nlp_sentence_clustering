@@ -17,7 +17,7 @@ class Ngrams(Base):
         self.questionid = questionid
         self.ngrams = ngrams
     def __repr__(self):
-        return '<User %s,%s>' %(self.questionid,self.ngrams)
+        return '<Ngrams %s,%s>' %(self.id,self.ngrams)
     def returnvalue(self):
         return self.questionid
     

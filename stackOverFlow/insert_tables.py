@@ -12,9 +12,10 @@ def init_db():
     # they will be registered properly on the metadata.  Otherwise
     # you will have to import them first before calling init_db()
     import models
+    Base.metadata.bind=engine
     Base.metadata.create_all(bind=engine)
-    print Base.metadata.tables.keys()
-    print Base.metadata.reflect(engine)
+    #print Base.metadata.tables.keys()
+    #print Base.metadata.reflect(engine)
 
 
 def newPhraseInfo(phrase):
@@ -24,15 +25,23 @@ def newPhraseInfo(phrase):
         }
 
 def insert_db():
-    entries=[('dogs',1),('cats',2),('jumping',3),('happened',4),('best',5),('worst',6)]
-    wnl=WNL()
-    for e in entries:
-        original=e[0]
-        lemma=wnl.lemmatize(original)
-        wordid=e[1]
-        l=LemmaTemp(lemma,original,wordid)
-        db_session.add(l)
-	db_session.commit()
+	from models import Ngrams
+	ngrams=Ngrams.query.all()
+	entries=[]
+	for ngram in ngrams:
+		phrase=str(ngram.ngrams)
+		if len(phrase.split())==1:
+			entries.append((ngram.id,phrase))
+	#entries=[('dogs',1),('cats',2),('jumping',3),('happened',4),('best',5),('worst',6)]
+	print entries[:10]
+	wnl=WNL()
+	for e in entries:
+		original=e[1]
+		lemma=wnl.lemmatize(original)
+		wordid=e[0]
+		l=LemmaTemp(lemma,original,wordid)
+		db_session.add(l)
+		db_session.commit()
 
 def insertdata():
 	import models
@@ -71,13 +80,14 @@ def insertdata():
     	db_session.commit() 
 
 if __name__=='__main__':
-    SQLALCHEMY_DATBASE_URI='sqlite:///tutorial.db'
+    SQLALCHEMY_DATBASE_URI='sqlite:///Database/tutorial.db'
     engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True)
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
                                              bind=engine))
     Base.query = db_session.query_property()
     init_db()
+    Base.metadata.bind=engine
     insert_db()
     insertdata()
 
