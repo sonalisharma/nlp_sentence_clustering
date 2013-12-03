@@ -61,12 +61,15 @@ def remove_stop_words(sentence):
 def clean_answers():
     from models import Questions
     for ques in session.query(Questions).all():
-        print ques.id
-        clean_html_answer = clean_html(ques.answer_text)
-        wo_punctuation_answer = remove_punctuation(clean_html_answer)
-        wo_stop_words_answer = remove_stop_words(wo_punctuation_answer)
-        ques.answer_text = unicode(wo_punctuation_answer, 'utf8')
-        ques.answer_wo_stop_words = unicode(wo_stop_words_answer, 'utf8')
+        logging.debug(ques.id)
+        if ques.answer_text:
+            clean_html_answer = clean_html(ques.answer_text)
+            wo_punctuation_answer = remove_punctuation(clean_html_answer)
+            wo_stop_words_answer = remove_stop_words(wo_punctuation_answer)
+            ques.answer_text = unicode(wo_punctuation_answer, 'utf8')
+            ques.answer_wo_stop_words = unicode(wo_stop_words_answer, 'utf8')
+        else:
+            session.delete(ques)
     session.commit()
 
 
@@ -75,12 +78,16 @@ def insert_data():
     from models import Questions
     #from models import Answers
     for ques in session.query(Questions).filter(Questions.ques_id <= 100):
-        clean_html_answer = clean_html(ques.answer_text)
-        wo_punctuation_answer = remove_punctuation(clean_html_answer)
-        wo_stop_words_answer = remove_stop_words(wo_punctuation_answer)
-        ques.answer_text = unicode(wo_stop_words_answer, 'utf8')
-        session.commit()
-        print ques.answer_text
+        logging.debug(ques.id)
+        if ques.answer_text:
+            clean_html_answer = clean_html(ques.answer_text)
+            wo_punctuation_answer = remove_punctuation(clean_html_answer)
+            wo_stop_words_answer = remove_stop_words(wo_punctuation_answer)
+            ques.answer_text = unicode(wo_stop_words_answer, 'utf8')
+        else:
+            session.delete(ques)
+    session.commit()
+
 
 
 def read_xml():
@@ -155,17 +162,25 @@ def merge_tables():
     from models import Questions
     from models import Answers
     for ques in session.query(Questions).all():
-        print ques.id
+        logging.debug(ques.id)
         ans = session.query(Answers).filter(Answers.id == ques.answer_id).first()
         if ans:
             ques.answer_text = ans.answer_text
             ques.answer_wo_stop_words = ans.answer_wo_stop_words
-        else:
-            session.delete(ques)
-    session.query(Answers).all().delete()  # reduce the size of the db
+        #else:
+        #    session.delete(ques)
+    #session.query(Answers).all().delete()  # reduce the size of the db
     session.commit()
 
+
+def delete_extras():
+    from models import Answers
+    session.query(Answers).delete()
+    session.commit()
+
+
 if __name__ == "__main__":
-    read_xml()
+    #read_xml()
     #merge_tables()
-    #clean_answers()
+    #delete_extras()
+    clean_answers()
