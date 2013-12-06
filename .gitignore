@@ -8,3 +8,5 @@ tutorial.db
 .DS_Store
 
 /stackOverFlow/.DS_Store
+
+/stackOverFlow/posts.xml
