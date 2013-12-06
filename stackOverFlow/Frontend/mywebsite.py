@@ -12,11 +12,16 @@ from sqlalchemy import create_engine, MetaData, Table
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tutorial.db'
+
+SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tutorial.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+
 #app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db = SQLAlchemy(app)
-eng = db.create_engine("sqlite:///tutorial.db")
+eng = db.create_engine(SQLALCHEMY_DATABASE_URI)
 #db.drop_all()
 #db.create_all()
 app.debug = True

@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Text
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -63,8 +63,8 @@ class Questions(Base):
     id = Column(Integer, primary_key=True)
     ques_text = Column(String(3500))
     answer_id = Column(Integer)
-    answer_text = Column(String(3500))
-    answer_wo_stop_words = Column(String(3500))
+    answer_text = Column(Text())
+    answer_wo_stop_words = Column(Text())
 
     def __init__(self, ques_id, ques_text, answer_id):
         self.id = ques_id
@@ -82,8 +82,8 @@ class Answers(Base):
     __tablename__ = 'answers'
     __table_args__ = {'extend_existing':True}
     id = Column(Integer, primary_key=True)
-    answer_text = Column(String(3500))
-    answer_wo_stop_words = Column(String(3500))
+    answer_text = Column(Text())
+    answer_wo_stop_words = Column(Text())
 
     def __init__(self, ans_id, ans_text):
         self.id = ans_id

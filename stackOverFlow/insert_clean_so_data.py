@@ -9,8 +9,11 @@ import logging
 logging.root.setLevel(logging.DEBUG)
 import xml.etree.cElementTree as cElementTree
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///tutorial_pp2.db'
-engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True)
+
+# SQLALCHEMY_DATABASE_URI = 'sqlite:///tutorial_pp2.db'
+SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
+
+engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True, pool_size=100, pool_recycle=7200)
 metadata = MetaData(bind=engine)
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -58,7 +61,7 @@ def remove_stop_words(sentence):
     return ' '.join([word for word in sentence.split() if word.lower() not in cached_stop_words])
 
 
-def clean_answers():
+def 2clean_answers():
     from models import Questions
     for ques in session.query(Questions).all():
         logging.debug(ques.id)
@@ -120,7 +123,7 @@ def read_xml():
                     except:
                         pass
             elem.clear()
-            if i > 20000:
+            if i > 200:
                 session.commit()
                 i = 0
             else:
@@ -162,13 +165,19 @@ def merge_tables():
     from models import Questions
     from models import Answers
     for ques in session.query(Questions).all():
+        commit_counter = 0
         logging.debug(ques.id)
         ans = session.query(Answers).filter(Answers.id == ques.answer_id).first()
         if ans:
             ques.answer_text = ans.answer_text
             ques.answer_wo_stop_words = ans.answer_wo_stop_words
-        #else:
-        #    session.delete(ques)
+        else:
+            session.delete(ques)
+        if commit_counter > 200:
+            session.commit()
+            commit_counter = 0
+        else:
+            commit_counter += 1
     #session.query(Answers).all().delete()  # reduce the size of the db
     session.commit()
 
