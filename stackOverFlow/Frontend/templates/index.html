@@ -60,25 +60,33 @@
 	    	{% if categories %}
 	    	<ul class="entries">
 	    	<h2>Categories</h2>
-	    	<label><input id="parents" type="checkbox" name="all" value="all" checked="checked"/> All </label>
+	    	<label><input id="category" type="checkbox" name="all" value="all"/> All </label>
 			  {% for k_par,v_par in categories[0].items() %}
 			    <li>
-			    	<label><input id="category" type="checkbox" name={{ k_par }} value={{ k_par }} ({{ v_par }}) onclick='handleclick(this);'/>{{ k_par }} ({{ v_par }}) </label>
+			    	<label><input id="category" type="checkbox" name={{ k_par }} value={{ k_par }} ({{ v_par }}) />{{ k_par }} ({{ v_par }}) </label>
 			    	{% if categories[1] %}
 			    	<ul class="entries">
-			    		 {% for k_child,v_child in categories[1].items() %}
+			    		 {% for k_child,v_children in categories[1].items() %}
 			    		 	{% if (k_child==k_par) %}
-					    		 <li>
-					    		 	<label><input id="category" type="checkbox" name={{ v_child[0] }} value={{ v_child[0] }} ({{ v_child[1] }}) onclick='handleclick(this);'/>{{ v_child[0] }} ({{ v_child[1] }}) </label><br>
+					    		 
+					    		 	{% for v_child in v_children %}
+
+					    		 	<li>
+					    		 	<label><input id="category" type="checkbox" name={{ v_child[0] }} value={{ v_child[0] }} ({{ v_child[1] }})  />{{ v_child[0] }} ({{ v_child[1] }}) </label><br>
+					    		 	{% endfor %}
+
 						    {% endif %}		
 							    	{% if categories[2] %}
 								    	<ul class="entries">
-								    		 {% for k_grand,v_grand in categories[2].items() %}
-								    		 	{% if (k_grand==v_child[0]) %}
-								    		 <li>
-								    		 	<label><input id="category" type="checkbox" name={{ v_grand[0] }} value={{ v_grand[0] }} ({{ v_grand[1] }}) onclick='handleclick(this);'/>{{ v_grand[0] }} ({{ v_grand[1] }})<label><br>
-								    		 	{% endif %}
-									    	</li>
+								    		 {% for k_grand,v_grandchildren in categories[2].items() %}
+									    		 {% if (k_grand==v_child[0]) %}
+									    		 	{% for v_grand in v_grandchildren %}
+											    		 <li>
+											    		 	<label><input id="category" type="checkbox" name={{ v_grand[0] }} value={{ v_grand[0] }} ({{ v_grand[1] }}) />{{ v_grand[0] }} ({{ v_grand[1] }})<label><br>
+											    		 	
+												    	</li>
+										    		{% endfor %}
+										    	{% endif %}
 									    	{% endfor %}
 									    </ul>
 
@@ -97,7 +105,7 @@
 	    	{% endif %}
 	    </div> 
 
-	    <div class="answers">
+	    <div id="answers">
 	    	<!--<h2>No results to display</h2> -->
 	    </div>
 	    </div>
