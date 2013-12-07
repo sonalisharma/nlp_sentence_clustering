@@ -11,16 +11,13 @@ from collections import Counter
 import traceback
 import operator
 from collections import OrderedDict
-<<<<<<< HEAD
 from sqlalchemy.sql.expression import text as sql
 
 wnl = WNL()
 
-=======
-wnl=WNL()
 ctr=0
 limit=0
->>>>>>> priya-i
+
 
 def removestopwords(query):
     wordlist = [word for word in query.split() if word not in stopwords.words('english')]
@@ -164,15 +161,10 @@ def fetchphrases(query):
 	print "Grand",grand
 	return parents,children,grand
 
-<<<<<<< HEAD
-=======
 
 if __name__=='__main__':
 	fetchphrases('memory')
->>>>>>> priya-i
 
-if __name__=='__main__':
-	fetchphrases('memory')
 
 
 

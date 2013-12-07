@@ -12,7 +12,6 @@ from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy.orm import scoped_session,sessionmaker
 from processing import fetchphrases
 
-
 app = Flask(__name__)
 
 #SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
