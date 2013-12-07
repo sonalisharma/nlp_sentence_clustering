@@ -23,8 +23,11 @@ def lemmatize(query):
 def removeurl(wordlist):
 	newlist=[]
 	for w in wordlist:
-		if(str(w).startswith("http") is False):
-			newlist.append(w)	
+		phrases=str(w[0]).split()
+		for phrase in phrases:
+			if(phrase.startswith('http') is True):
+				phrase=""
+		newlist.append((phrases,w[1]))	
 	return newlist
 
 def searchphrases(query): 
@@ -55,7 +58,8 @@ def categorize(phraseids):
 
 def fetchphrases(query):
 	results=searchphrases(query)
-	print results
+	#results=removeurl(results)
+	print "Results",results
 	parents={}
 	children={}
 	categories=[]
@@ -84,31 +88,39 @@ def fetchphrases(query):
 		except:
 			print "Exception in ",phrase
 			print traceback.format_exc()
-	if(unigrams is not None):
+	if(len(unigrams)!=0):
 		parents=unigrams
-		if(bigrams is not None):
+		if(len(bigrams)!=0):
 			for unigram in unigrams.keys():
 				for bigram,freq in bigrams.items():
 					if(unigram in bigram):
 						children[unigram]=(bigram,freq)
-			if(trigrams is not None):
+					else:
+						parents[bigram]=freq
+			if(len(trigrams)!=0):
 				for bigram in bigrams.keys():
 					for trigram,freq in trigrams.items():
 						if(bigram in trigram):
 							grand[bigram]=(trigram,freq)
-		elif(trigrams is not None):
+						else:
+							children[bigram]=(trigram,freq)
+		elif(len(trigrams)!=0):
 			for unigram in unigrams.keys():
 				for trigram,freq in trigrams.items():
 					if(unigram in trigram):
 						children[unigram]=(trigram,freq)
-	elif(bigrams is not None):
+					else:
+						parents[trigram]=freq
+	elif(len(bigrams)!=0):
 		parents=bigrams
-		if(trigrams is not None):
+		if(len(trigrams)!=0):
 				for bigram in bigrams.keys():
 					for trigram,freq in trigrams.items():
 						if(bigram in trigram):
 							children[bigram]=(trigram,freq)
-	elif(trigrams is not None):
+						else:
+							parents[trigram]=freq
+	elif(len(trigrams)!=0):
 		parents=trigrams
 	else:
 		parents={}
@@ -118,7 +130,7 @@ def fetchphrases(query):
 	return parents,children,grand
 
 if __name__=='__main__':
-	fetchphrases('memory')
+	fetchphrases('big data')
 
 
 

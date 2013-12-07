@@ -55,13 +55,13 @@ def getdata(query):
     print "here"
     if query is not None:
       parents,children,grand=fetchphrases(query)
-      #Parents Dict: category:freq Children dict: parent_cat:[category:freq]
+      #Parents Dict: category:freq Children dict: parent_cat:[category:freq], Grand dict : child_cat:[category:freq]
       categories={}
       for phrase,freq in parents.items():
         try:
-          categories[str(phrase)]=([],freq)
+          categories[str(phrase)]=freq
         except UnicodeEncodeError:
-          categories[phrase]=([],freq)
+          categories[phrase]=freq
       #Search for each category in ngrams.lemmangrams, get question ids from ngrams 
       #and question text from questions table
       results={}
@@ -76,7 +76,7 @@ def getdata(query):
             ques.append(str(r['ques_text']))
         except UnicodeEncodeError:
           continue  
-        results[k]=(list(set(ques)),v[1]) 
+        results[k]=(list(set(ques)),v) 
       
       return results
 
