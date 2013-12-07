@@ -14,6 +14,7 @@ class Ngrams(Base):
     ngrams = Column(String(3500))
     lemmangrams = Column(String(3500))
     
+    
     def __init__(self,questionid,ngrams,lemmangrams):
         self.questionid = questionid
         self.ngrams = ngrams

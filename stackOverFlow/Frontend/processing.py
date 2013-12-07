@@ -25,7 +25,7 @@ def searchphrases(query):
 	phraseids = []
 	ngramids=[]
 	for word in query_lemmatized.split():
-		query_ngram = "select id from ngrams where lower(lemmangrams) like lower('%{}%')".format(word)
+		query_ngram = "select id from ngrams where lower(lemmangrams) like lower('% {} %')".format(word)
 		con = it.engine.execute(query_ngram)
 		rows_phrase = con.fetchall()
 		if rows_phrase:
@@ -41,28 +41,31 @@ def categorize(phraseids):
 	rows_phrase = con.fetchall()
 	n = [data[0] for data in rows_phrase]
 	d = Counter(n)
-	return d.most_common(20)
+	return d.most_common(50)
 
 def fetchphrases(query):
 	results=searchphrases(query)
 	parents={}
 	children={}
+	categories=[]
+	for cat in results:
+		categories.append(cat[0])
 	for cat in results:
 		try:
 			unigram=str(cat[0]).split()
 			if(len(unigram)==1):
+				categories.pop(cat[0])
 				parents[unigram[0]]=cat[1]
-			for k in parents.keys():
-					children[k]=searchphrases(k)
+			'''for k in parents.keys():
+					children[k]=searchphrases(k)'''
 			#for k,v in children.items():
 			#	print k,v
 		except:
 			print unigram
-	print parents,children
-	return parents,children
+	
 
 if __name__=='__main__':
-	fetchphrases('character seinfeld')
+	fetchphrases('gold magi')
 
 
 
