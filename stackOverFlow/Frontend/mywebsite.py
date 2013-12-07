@@ -44,28 +44,30 @@ def getuser():
 def getdata(query):
     print "here"
     if query is not None:
-      phrases=fetchphrases(query)
-      #loop through and get first elemet of the tuple to print the categroes
+      parents,children=fetchphrases(query)
+      #Parents Dict: category:freq Children dict: parent_cat:[category:freq]
       categories={}
-      for phrase in phrases:
+      for phrase,freq in parents.items():
         try:
-          categories[str(phrase[0])]=([],phrase[1])
+          categories[str(phrase)]=([],freq)
         except UnicodeEncodeError:
-          categories[phrase[0]]=([],phrase[1])
+          categories[phrase]=([],freq)
       #Search for each category in ngrams.lemmangrams, get question ids from ngrams 
       #and question text from questions table
       results={}
       for k,v in categories.items():
         ques=[]
         try:
-          res = engine.execute("select q.ques_text from ngrams n join questions\
+          res = engine.execute("select q.ques_text,q.answer_id from ngrams n join questions\
           q on n.questionid=q.id where n.lemmangrams='{}'".format(k))
-          for r in res:   
+          for r in res:
+            ans_id=str(r['answer_id'])
+            ans_text=engine.execute("select answer_text from answers where id='{}'".format(ans_id))
             ques.append(str(r['ques_text']))
         except UnicodeEncodeError:
           continue  
         results[k]=(list(set(ques)),v[1]) 
-      print results
+      
       return results
 
 @app.route('/data', methods=['GET', 'POST'])

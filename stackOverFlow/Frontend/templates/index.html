@@ -3,7 +3,41 @@
 <header>
 	<h1>Hoogle</h1>
 	<h3>This interface categorizes your search results</h3>
-<header>
+	<script type="text/javascript">
+	console.log("new js")
+	function handleclick(cb){
+		if(cb.checked==true){
+			name=cb.name;
+			if(name=="all"){
+				labels= document.getElementsByTagName('LABEL');
+				for(i=1;i<labels.length;i++){
+					labels[i].style.display="block";
+				}
+			}else{
+				labels=document.getElementsByName(name);
+				console.log(labels);
+				for(i=1;i<labels.length;i++){
+					labels[i].style.display="block";
+				}
+			}
+			//labels.style.display="none";
+		}else{
+			if(name=="all"){
+				labels= document.getElementsByTagName('LABEL');
+				for(i=1;i<labels.length;i++){
+					labels[i].style.display="none";
+				}
+			}else{
+				labels=document.getElementsByName(name);
+				console.log(labels);
+				for(i=1;i<labels.length;i++){
+					labels[i].style.display="none";
+				}
+			}
+		}
+	}
+	</script>
+</header>
     <form method="post" action="/" enctype=multipart/form-data>
 	    <p><label>Query: </label> <input class="query" type="text" name="txt_query" required>
 	    <button type="submit">Go</button></p>
@@ -12,9 +46,10 @@
 	    	{% if categories %}
 	    	<ul class="entries">
 	    	<h2>Categories</h2>
+	    	<label><input id="parents" type="checkbox" name="all" value="all" checked="checked"/> All </label>
 			  {% for k,v in categories.items() %}
 			    <li>
-			    	<label><input id="categories" type="checkbox" name="checkbox" value={{ k }}/> {{ k }} 
+			    	<label><input id="parents" type="checkbox" name={{ k }} value={{ k }} onclick='handleclick(this);'/> {{ k }} 
 			    	({{ v[1] }})</label>
 			    </li>
 
@@ -26,23 +61,33 @@
 	    	</div>
 	    	{% endif %}
 	    </div>
-	    <div class ="right">
+	    <div class ="right" style="float:left;">
 	    	{% if categories %}
 	    	<ul class="entries">
 	    	<h2>Results</h2>
 			  {% for k,v in categories.items() %}
-                <h3>{{ k }}</h3>
+                <h3>
+				<label name={{ k }} style="display:block;">
+				{{ k }}</label></h3>
 			    <li>
-				<label>{{ v[0] }}</label>
+				{% for v in v[0] %}
+				<label name={{ k }} style="display:block;">
+				{{ v }} <br>
+				</label>
+				{%endfor%}
 			    </li>
 
 			  {% endfor %}
 			</ul>
 	    	{%else%}
 	    	<div id ="empty">
-	    		<h2>No results to display</h2>
+	    		<h2>No results to display &nbsp;</h2>
 	    	</div>
 	    	{% endif %}
+	    </div>
+	    <div class="answers">
+	    	<h2>No results to display</h2>
+	    </div>
 	    </div>
 	    </div>
     </form>

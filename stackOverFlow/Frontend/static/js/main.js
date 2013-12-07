@@ -1,9 +1,6 @@
 $( document ).ready(function() {
 	console.log("I am here");
 	var selected_cat =[];
-	
-
-
   	$( ".checkbox" ).click(function() {
   		alert($('#categories').val());
   		$('input[name="checkbox"]:checked').each(function() {

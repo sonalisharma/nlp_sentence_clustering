@@ -28,3 +28,4 @@ h2              { font-size: 1.2em; }
 #colors 		{margin-top:50px;display:none;}
 .left 			{display:block; float: left; width: 15%; height: 1000px}
 .right 			{display:block;}
+.answers		{display:block;}
