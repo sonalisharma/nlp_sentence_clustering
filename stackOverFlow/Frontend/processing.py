@@ -11,10 +11,16 @@ from collections import Counter
 import traceback
 import operator
 from collections import OrderedDict
+<<<<<<< HEAD
 from sqlalchemy.sql.expression import text as sql
 
 wnl = WNL()
 
+=======
+wnl=WNL()
+ctr=0
+limit=0
+>>>>>>> priya-i
 
 def removestopwords(query):
     wordlist = [word for word in query.split() if word not in stopwords.words('english')]
@@ -145,11 +151,25 @@ def fetchphrases(query):
 		parents=trigrams
 	else:
 		parents={}
+	for key,values in children.items():
+		sorted_child=sorted(values,key=lambda x:x[1],reverse=True)
+		children[key]=sorted_child
+
+	for key,values in grand.items():
+		sorted_gchild=sorted(values,key=lambda x:x[1],reverse=True)
+		grand[key]=sorted_gchild
+
 	print "Parents",parents
 	print "Children",children
 	print "Grand",grand
 	return parents,children,grand
 
+<<<<<<< HEAD
+=======
+
+if __name__=='__main__':
+	fetchphrases('memory')
+>>>>>>> priya-i
 
 if __name__=='__main__':
 	fetchphrases('memory')
