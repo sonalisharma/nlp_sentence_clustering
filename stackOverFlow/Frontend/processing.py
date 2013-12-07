@@ -1,5 +1,7 @@
 import nltk
 from nltk.corpus import stopwords
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
 import re
 from collections import defaultdict
 from nltk.stem import WordNetLemmatizer as WNL
@@ -9,17 +11,20 @@ from collections import Counter
 import traceback
 import operator
 from collections import OrderedDict
-wnl=WNL()
-ctr=0
-limit=0
+from sqlalchemy.sql.expression import text as sql
+
+wnl = WNL()
+
 
 def removestopwords(query):
-	wordlist =  [ word for word in query.split() if word not in stopwords.words('english') ]
-	return " ".join(wordlist)
+    wordlist = [word for word in query.split() if word not in stopwords.words('english')]
+    return " ".join(wordlist)
+
 
 def lemmatize(query):
-	wordlist =  [wnl.lemmatize(word) for word in query.split()]
-	return " ".join(wordlist)
+    wordlist = [wnl.lemmatize(word) for word in query.split()]
+    return " ".join(wordlist)
+
 
 def removeurl(wordlist):
 	newlist=[]
@@ -148,7 +153,6 @@ def fetchphrases(query):
 
 if __name__=='__main__':
 	fetchphrases('memory')
-
 
 
 
