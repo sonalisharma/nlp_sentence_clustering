@@ -7,6 +7,7 @@ from models import Base
 import insert_tables as it
 from collections import Counter
 import traceback
+import operator
 
 wnl=WNL()
 ctr=0
@@ -38,7 +39,7 @@ def searchphrases(query):
 	words=query_lemmatized.split()
 	query_ngram = "select id from ngrams where lower(lemmangrams) like lower('%{}%')".format(words[0])
 	for word in words[1:]:
-		query_ngram=query_ngram+" and lower(lemmangrams) like lower('%{}%')".format(word)
+		query_ngram=query_ngram+" or lower(lemmangrams) like lower('%{}%')".format(word)
 	con = it.engine.execute(query_ngram)
 	rows_phrase = con.fetchall()
 	if rows_phrase:
@@ -54,7 +55,7 @@ def categorize(phraseids):
 	rows_phrase = con.fetchall()
 	n = [data[0] for data in rows_phrase]
 	d = Counter(n)
-	return d.most_common(100)
+	return d.most_common(5)
 
 def fetchphrases(query):
 	results=searchphrases(query)
@@ -124,10 +125,13 @@ def fetchphrases(query):
 		parents=trigrams
 	else:
 		parents={}
-	print "Parents",parents
-	print "Children",children
-	print "Grand",grand
-	return parents,children,grand
+	sorted_p = sorted(parents.iteritems(), key=operator.itemgetter(1))
+	sorted_c = sorted(children.iteritems(), key=operator.itemgetter(1))
+	sorted_g = sorted(grand.iteritems(), key=operator.itemgetter(1))
+	print "Parents",sorted_p
+	print "Children",sorted_c
+	print "Grand",sorted_g
+	return sorted_p,sorted_c,sorted_g
 
 
 if __name__=='__main__':
