@@ -9,8 +9,6 @@ $( document ).ready(function() {
 
 		alert(selected_cat);
 
-  		
-
      	var request = $.ajax({
          type: "POST",
          url: "data",

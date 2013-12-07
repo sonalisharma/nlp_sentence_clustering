@@ -5,7 +5,19 @@
 		<img style="text-align:center;margin:auto" src="../static/img/StackSearch.gif"/>  
 	</div>
 	<script type="text/javascript">
-	console.log("new js")
+			console.log("new js")
+		  /*$(function() {
+		    $('').bind('click', function() {
+		      $.getJSON($SCRIPT_ROOT + '/_add_numbers', {
+		        a: $('input[name="a"]').val(),
+		        b: $('input[name="b"]').val()
+		      }, function(data) {
+		        $("#result").text(data.result);
+		      });
+		      return false;
+		    });
+		  });
+
 	function handleclick(cb){
 		if(cb.checked==true){
 			name=cb.name;
@@ -36,7 +48,7 @@
 				}
 			}
 		}
-	}
+	}*/
 	</script>
 </header>
     <form method="post" action="/" enctype=multipart/form-data>
@@ -51,20 +63,20 @@
 	    	<label><input id="parents" type="checkbox" name="all" value="all" checked="checked"/> All </label>
 			  {% for k_par,v_par in categories[0].items() %}
 			    <li>
-			    	<label><input id="parents" type="checkbox" name={{ k_par }} value={{ k_par }} ({{ v_par }}) onclick='handleclick(this);'/>{{ k_par }} ({{ v_par }}) </label>
+			    	<label><input id="category" type="checkbox" name={{ k_par }} value={{ k_par }} ({{ v_par }}) onclick='handleclick(this);'/>{{ k_par }} ({{ v_par }}) </label>
 			    	{% if categories[1] %}
 			    	<ul class="entries">
 			    		 {% for k_child,v_child in categories[1].items() %}
 			    		 	{% if (k_child==k_par) %}
 					    		 <li>
-					    		 	<label><input id="children" type="checkbox" name={{ v_child[0] }} value={{ v_child[0] }} ({{ v_child[1] }}) onclick='handleclick(this);'/>{{ v_child[0] }} ({{ v_child[1] }}) </label><br>
+					    		 	<label><input id="category" type="checkbox" name={{ v_child[0] }} value={{ v_child[0] }} ({{ v_child[1] }}) onclick='handleclick(this);'/>{{ v_child[0] }} ({{ v_child[1] }}) </label><br>
 						    {% endif %}		
 							    	{% if categories[2] %}
 								    	<ul class="entries">
 								    		 {% for k_grand,v_grand in categories[2].items() %}
 								    		 	{% if (k_grand==v_child[0]) %}
 								    		 <li>
-								    		 	<label><input id="grand" type="checkbox" name={{ v_grand[0] }} value={{ v_grand[0] }} ({{ v_grand[1] }}) onclick='handleclick(this);'/>{{ v_grand[0] }} ({{ v_grand[1] }})<label><br>
+								    		 	<label><input id="category" type="checkbox" name={{ v_grand[0] }} value={{ v_grand[0] }} ({{ v_grand[1] }}) onclick='handleclick(this);'/>{{ v_grand[0] }} ({{ v_grand[1] }})<label><br>
 								    		 	{% endif %}
 									    	</li>
 									    	{% endfor %}
