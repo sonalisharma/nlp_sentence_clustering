@@ -11,6 +11,7 @@ from itertools import izip
 from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy.orm import scoped_session,sessionmaker
 from processing import fetchphrases
+from flask import json
 
 app = Flask(__name__)
 
@@ -65,29 +66,47 @@ def getdata(query,):
       #Search for each category in ngrams.lemmangrams, get question ids from ngrams 
       #and question text from questions table
       
-      results={}
-      for k,v in categories.items():
-        ques_ans=[]
-        try:
-          res = engine.execute("select q.ques_text,q.id,q.answer_text from ngrams n join questions\
-          q on n.questionid=q.id where n.lemmangrams='{}'".format(k))
-          for r in res:
-            ques_ans.append([str(r['id']),str(r['ques_text']),str(r['answer_text'])])
-        except UnicodeEncodeError:
-          continue  
-        results[k]=(ques_ans,v)
-      return (parent,children,grand),results
+     
+      return (parent,children,grand)
 
 
 @app.route('/data', methods=['GET', 'POST'])
 def data():
     #print "here inside data"
-    list_name = request.args.get("input_value")
-    cat = getdata()
+    #list_name = request.args.get("isLocked")
+    #print "I am here inside data"
+    #print list_name
+
+    data = json.loads(request.form.get('data'))
+    phrase_data = data['value']
+
+    results={}
+    for p in phrase_data:
+      print str(p)
+      ques_ans=[]
+      try:
+        print "select q.ques_text,q.id,q.answer_text from ngrams n join questions\
+        q on n.questionid=q.id where n.lemmangrams='{}'".format(str(p))
+
+        res = engine.execute("select q.ques_text,q.id,q.answer_text from ngrams n join questions\
+        q on n.questionid=q.id where n.lemmangrams='{}'".format(str(p)))
+        print "After execute"
+        print res
+        for r in res.fetchall():
+          print r
+          ques_ans.append([str(r['id']),str(r['ques_text']),str(r['answer_text'])])
+        results[str(p)]=ques_ans
+      except UnicodeEncodeError:
+        continue  
+      #results[str(p)]=ques_ans
+    print results
+    #return str(ss)
+    return  "somthing"
+    #cat = getdata()
     #print "listname"
     #print list_name
     #print "/listname"
-    return render_template('index.html',categories=cat)
+    #return render_template('index.html',categories=cat)
 
 @app.route('/results/<query>')
 def getresults(query):
@@ -95,11 +114,11 @@ def getresults(query):
       if query=='999':
         categories=[]
       else:
-        categories,results=getdata(query)
+        categories=getdata(query)
         print "***********************************"
         print categories[0]
         print "***********************************"
-    return render_template('index.html',categories=categories,results=results)
+    return render_template('index.html',categories=categories)
 
 
 if __name__ == "__main__":
