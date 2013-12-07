@@ -4,7 +4,20 @@
 	<div style="width:50%;margin:auto;height:80px;">
 		<img style="text-align:center;margin:auto" src="../static/img/StackSearch.gif"/>  
 	</div>
+
 	<script type="text/javascript">
+	function show(elementID) {
+        if(document.getElementById(elementID).style.display=='none') {
+            document.getElementById(elementID).style.display='block';
+        }
+        return false;
+    }
+    function hide(elementID) {
+        if(document.getElementById(elementID).style.display=='block') {
+            document.getElementById(elementID).style.display='none';
+        }
+        return false;
+    }
 			console.log("new js")
 		  /*$(function() {
 		    $('').bind('click', function() {
@@ -54,7 +67,6 @@
     <form method="post" action="/" enctype=multipart/form-data>
 	    <p><div style="width:60%;margin:auto;"><label></label> <input class="query" type="text" name="txt_query" required>
 	    <button type="submit">Go</button></p></div>
-	    
 	    <div class ="content">
 	    <div class="left"> 
 	    	{% if categories %}
@@ -98,7 +110,33 @@
 	    </div> 
 
 	    <div class="answers">
-	    	<!--<h2>No results to display</h2> -->
+	    	{% if results %}
+	    	<ul class="entries">
+	    	<h2>Results</h2>
+			  {% for k,v in results.items() %}
+                <h3>
+				<label name={{ k }} style="display:block;">
+				{{ k }}</label></h3>
+			    <li>
+				<label name={{ k }} style="display:block;">
+                    {% for qANDans in v[0] %}
+                        <strong><a onclick="return show({{ qANDans[0].decode('utf8') }});">{{ qANDans[1].decode('utf8') }}</a></strong><br>
+                        <p style="display:none;width:500px;" id="{{ qANDans[0].decode('utf8') }}">
+                        	<a onclick="return hide({{ qANDans[0].decode('utf8') }});">
+                        		{{ qANDans[2].decode('utf8') }}
+                        	</a>
+                        </p>
+                    {% endfor %}
+				</label>
+			    </li>
+
+			  {% endfor %}
+			</ul>
+	    	{%else%}
+	    	<div id ="empty">
+	    		<h2>No results to display .!..&nbsp;</h2>
+	    	</div>
+	    	{% endif %}
 	    </div>
 	    </div>
 	    </div>
