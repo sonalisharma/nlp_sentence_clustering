@@ -9,11 +9,7 @@ from models import LemmaTemp,Base
 
 wnl=WNL()
 SQLALCHEMY_DATBASE_URI='sqlite:///tutorial.db'
-engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True)
-#SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
-
-engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True, pool_size=100, pool_recycle=7200)
-# engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True)
+engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True,pool_recycle=7200)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
                                              bind=engine))
