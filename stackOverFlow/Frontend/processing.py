@@ -62,7 +62,13 @@ def fetchphrases(query):
 			#	print k,v
 		except:
 			print unigram
-	
+	unigrams=[k for k in parents.keys()]
+	'''for cat in categories:
+		if(cat in unigrams):
+			children[cat]=results[cat]'''
+	print parents,children
+	return parents,children
+
 
 if __name__=='__main__':
 	fetchphrases('gold magi')
