@@ -15,8 +15,8 @@ from processing import fetchphrases
 
 app = Flask(__name__)
 
-SQLALCHEMY_DATBASE_URI='sqlite:///tutorial.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATBASE_URI
+SQLALCHEMY_DATABASE_URI='sqlite:///tutorial.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 
 
 #SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
@@ -27,7 +27,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATBASE_URI
 
 #app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True)
+engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
                                              bind=engine))
@@ -54,7 +54,7 @@ def getuser():
 def getdata(query):
     print "here"
     if query is not None:
-      parents,children=fetchphrases(query)
+      parents,children,grand=fetchphrases(query)
       #Parents Dict: category:freq Children dict: parent_cat:[category:freq]
       categories={}
       for phrase,freq in parents.items():
