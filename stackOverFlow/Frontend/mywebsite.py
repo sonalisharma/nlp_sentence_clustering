@@ -15,9 +15,9 @@ from processing import fetchphrases
 
 app = Flask(__name__)
 
-SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
+#SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
 
-# SQLALCHEMY_DATABASE_URI='sqlite:///tutorial.db'
+SQLALCHEMY_DATABASE_URI='sqlite:///tutorial.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 
 
@@ -29,11 +29,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 
 #app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True)
-engine = create_engine(SQLALCHEMY_DATABASE_URI,
-                       convert_unicode=True,
-                       pool_recycle=7200,
-                       paramstyle='format')
+engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True)
+#engine = create_engine(SQLALCHEMY_DATABASE_URI,
+#                       convert_unicode=True,
+#                       pool_recycle=7200,
+#                       paramstyle='format')
 
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
@@ -78,14 +78,14 @@ def getdata(query,):
       """
       results={}
       for k,v in categories.items():
-        ques=[]
+        ques_ans=[]
         try:
           res = engine.execute("select q.ques_text,q.answer_id from ngrams n join questions\
           q on n.questionid=q.id where n.lemmangrams='{}'".format(k))
           for r in res:
             ans_id=str(r['answer_id'])
             ans_text=engine.execute("select answer_text from answers where id='{}'".format(ans_id))
-            ques.append(str(r['ques_text']))
+            ques_ans.append([str(r['ques_text'])],ans_text)
         except UnicodeEncodeError:
           continue  
         results[k]=(list(set(ques)),v) 
@@ -114,7 +114,6 @@ def getresults(query):
         print categories[0]
         print "***********************************"
     return render_template('index.html',categories=categories)
-
 
 if __name__ == "__main__":
     global name
