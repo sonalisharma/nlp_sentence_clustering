@@ -14,8 +14,17 @@ from processing import fetchphrases
 
 
 app = Flask(__name__)
+
 SQLALCHEMY_DATBASE_URI='sqlite:///tutorial.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATBASE_URI
+
+
+#SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tutorial.db'
+#app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+
+
 #app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True)
@@ -24,6 +33,7 @@ db_session = scoped_session(sessionmaker(autocommit=False,
                                              bind=engine))
 
 db = SQLAlchemy(app)
+eng = db.create_engine(SQLALCHEMY_DATABASE_URI)
 
 #db.drop_all()
 #db.create_all()
