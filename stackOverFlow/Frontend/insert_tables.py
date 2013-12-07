@@ -8,8 +8,12 @@ from nltk.stem import WordNetLemmatizer as WNL
 from models import LemmaTemp,Base
 
 wnl=WNL()
-SQLALCHEMY_DATBASE_URI='sqlite:///tutorial.db'
-engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True)
+SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
+
+# engine = create_engine('mysql+mysqlconnector://root@127.0.0.1/mainserver?charset=utf8&use_unicode=0', paramstyle='format', echo=True)
+
+engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True, pool_size=100, pool_recycle=7200, paramstyle='format')
+# engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
                                              bind=engine))
@@ -26,6 +30,8 @@ def init_db():
     import models
     Base.metadata.bind=engine
     Base.metadata.create_all(bind=engine)
+    #print Base.metadata.tables.keys()
+    #print Base.metadata.reflect(engine)
 
 
 def newPhraseInfo(phrase):
@@ -59,17 +65,18 @@ def insertdata():
     from models import Phrases
     allphrases = {}
     phrase_index= {}
-    r = engine.execute('select * from questions_temp')
+    r = engine.execute('select * from questions where id < 100000')
     data = r.fetchall()
     for row in data:
-        answer = row[5]
+        answer = row[4]
         ans = answer.split()
         for i in range(len(ans)):
             for j in range(i+1, len(ans)+1):
                 phrase = " ".join(ans[i:j])
                 # Getting only 4 grams instead of all ngrams
-                if len(phrase.split()) < 5:
-                    print phrase
+                if len(phrase.split()) < 4:
+                    print row[0]
+                    # print phrase
                     lemmaphrase = lemmatize(ans[i:j])
                     ng = Ngrams(row[0],phrase, lemmaphrase)
                     #print "------------"
