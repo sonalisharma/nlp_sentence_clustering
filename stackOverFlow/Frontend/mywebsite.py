@@ -13,7 +13,6 @@ from sqlalchemy.orm import scoped_session,sessionmaker
 from processing import fetchphrases
 from flask import json
 
-
 app = Flask(__name__)
 
 #SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
@@ -76,7 +75,7 @@ def getdata(query,):
           categories[phrase]=freq
       #Search for each category in ngrams.lemmangrams, get question ids from ngrams 
       #and question text from questions table
-      """
+      
       results={}
       for k,v in categories.items():
         ques_ans=[]
@@ -89,10 +88,9 @@ def getdata(query,):
             ques_ans.append([str(r['ques_text'])],ans_text)
         except UnicodeEncodeError:
           continue  
-        results[k]=(list(set(ques)),v) 
-       """
-      return (parent,children,grand)
-      #return results
+        results[k]=(ques_ans,v)
+      return (parent,children,grand),results
+
 
 @app.route('/data', methods=['GET', 'POST'])
 def data():
@@ -140,6 +138,7 @@ def getresults(query):
       else:
         categories=getdata(query)
     return render_template('index.html',categories=categories)
+
 
 if __name__ == "__main__":
     global name
