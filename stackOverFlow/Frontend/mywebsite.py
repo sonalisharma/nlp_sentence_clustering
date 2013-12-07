@@ -66,17 +66,17 @@ def getdata(query):
       #and question text from questions table
       results={}
       for k,v in categories.items():
-        ques=[]
+        ques_ans=[]
         try:
           res = engine.execute("select q.ques_text,q.answer_id from ngrams n join questions\
           q on n.questionid=q.id where n.lemmangrams='{}'".format(k))
           for r in res:
             ans_id=str(r['answer_id'])
             ans_text=engine.execute("select answer_text from answers where id='{}'".format(ans_id))
-            ques.append(str(r['ques_text']))
+            ques_ans.append([str(r['ques_text'])],ans_text)
         except UnicodeEncodeError:
           continue  
-        results[k]=(list(set(ques)),v) 
+        results[k]=(ques_ans,v)
       
       return results
 
@@ -96,8 +96,8 @@ def getresults(query):
       if query=='999':
         categories=[]
       else:
-        categories=getdata(query)
-    return render_template('index.html',categories=categories)
+        results=getdata(query)
+    return render_template('index.html',categories=results)
 
 @app.route('/user/<name>')
 def thanks(name):

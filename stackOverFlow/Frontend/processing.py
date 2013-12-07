@@ -7,7 +7,8 @@ from models import Base
 import insert_tables as it
 from collections import Counter
 import traceback
-
+import operator
+from collections import OrderedDict
 wnl=WNL()
 ctr=0
 limit=0
@@ -38,7 +39,7 @@ def searchphrases(query):
 	words=query_lemmatized.split()
 	query_ngram = "select id from ngrams where lower(lemmangrams) like lower('%{}%')".format(words[0])
 	for word in words[1:]:
-		query_ngram=query_ngram+" and lower(lemmangrams) like lower('%{}%')".format(word)
+		query_ngram=query_ngram+" or lower(lemmangrams) like lower('%{}%')".format(word)
 	con = it.engine.execute(query_ngram)
 	rows_phrase = con.fetchall()
 	if rows_phrase:
@@ -54,19 +55,19 @@ def categorize(phraseids):
 	rows_phrase = con.fetchall()
 	n = [data[0] for data in rows_phrase]
 	d = Counter(n)
-	return d.most_common(100)
+	return d.most_common(5)
 
 def fetchphrases(query):
 	results=searchphrases(query)
 	#results=removeurl(results)
 	print "Results",results
-	parents={}
-	children={}
+	parents=OrderedDict()
+	children=OrderedDict()
+	grand=OrderedDict()
 	categories=[]
 	unigrams={}
 	bigrams={}
 	trigrams={}
-	grand={}
 	for cat in results:
 		categories.append(cat[0])
 	for cat in results:
@@ -94,21 +95,33 @@ def fetchphrases(query):
 			for unigram in unigrams.keys():
 				for bigram,freq in bigrams.items():
 					if(unigram in bigram):
-						children[unigram]=(bigram,freq)
+						try:
+							children[unigram].append((bigram,freq))
+						except:
+							children[unigram]=[(bigram,freq)]
 					else:
 						parents[bigram]=freq
 			if(len(trigrams)!=0):
 				for bigram in bigrams.keys():
 					for trigram,freq in trigrams.items():
 						if(bigram in trigram):
-							grand[bigram]=(trigram,freq)
+							try:
+								grand[bigram].append((trigram,freq))
+							except:
+								grand[bigram]=(trigram,freq)
 						else:
-							children[bigram]=(trigram,freq)
+							try:
+								children[bigram].append((trigram,freq))
+							except:
+								children[bigram]=(trigram,freq)
 		elif(len(trigrams)!=0):
 			for unigram in unigrams.keys():
 				for trigram,freq in trigrams.items():
 					if(unigram in trigram):
-						children[unigram]=(trigram,freq)
+						try:
+							children[unigram].append((trigram,freq))
+						except:
+							children[unigram]=(trigram,freq)
 					else:
 						parents[trigram]=freq
 	elif(len(bigrams)!=0):
@@ -117,7 +130,10 @@ def fetchphrases(query):
 				for bigram in bigrams.keys():
 					for trigram,freq in trigrams.items():
 						if(bigram in trigram):
-							children[bigram]=(trigram,freq)
+							try:
+								children[bigram].append((trigram,freq))
+							except:
+								children[bigram]=(trigram,freq)
 						else:
 							parents[trigram]=freq
 	elif(len(trigrams)!=0):
@@ -129,8 +145,9 @@ def fetchphrases(query):
 	print "Grand",grand
 	return parents,children,grand
 
+
 if __name__=='__main__':
-	fetchphrases('big data')
+	fetchphrases('memory')
 
 
 
