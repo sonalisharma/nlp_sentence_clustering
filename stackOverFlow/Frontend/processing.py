@@ -1,5 +1,7 @@
 import nltk
 from nltk.corpus import stopwords
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
 import re
 from collections import defaultdict
 from nltk.stem import WordNetLemmatizer as WNL
@@ -7,6 +9,7 @@ from models import Base
 import insert_tables as it
 from collections import Counter
 import traceback
+from sqlalchemy.sql.expression import text as sql
 
 wnl = WNL()
 ctr = 0
@@ -39,18 +42,14 @@ def searchphrases(query):
     query_lemmatized = lemmatize(query_nostopwords) #look like
     phraseids = []
     ngramids = []
-    words = query_lemmatized.split()
-    query_ngram = "select id from ngrams where lower(lemmangrams) like lower('%{}%')".format(words[0])
-    for word in words[1:]:
-        query_ngram = query_ngram + " and lower(lemmangrams) like lower('%{}%')".format(word)
-    con = it.engine.execute(query_ngram)
-    rows_phrase = con.fetchall()
-    if rows_phrase:
-        ngramids = list(set([str(i[0]) for i in rows_phrase]))
-    phraseids.extend(ngramids)
+    for word in query_lemmatized.split():
+        from models import Ngrams
+        rows_phrase = it.db_session.query(Ngrams).filter(Ngrams.lemmangrams.like('%%%s%%' % (word,)))
+        if rows_phrase:
+            ngramids = [str(i.id) for i in rows_phrase]
+            phraseids.extend(ngramids)
     phraseids = list(set(phraseids))
-    results = categorize(phraseids)
-    return results
+    return categorize(phraseids)
 
 
 def categorize(phraseids):

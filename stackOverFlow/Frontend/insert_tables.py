@@ -8,19 +8,19 @@ from nltk.stem import WordNetLemmatizer as WNL
 from models import LemmaTemp,Base
 
 wnl=WNL()
-#SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
-SQLALCHEMY_DATABASE_URI = 'sqlite:///tutorial.db'
+SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
+# SQLALCHEMY_DATABASE_URI = 'sqlite:///tutorial.db'
 # engine = create_engine('mysql+mysqlconnector://root@127.0.0.1/mainserver?charset=utf8&use_unicode=0', paramstyle='format', echo=True)
 
 engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True, pool_recycle=7200, paramstyle='format')
 # engine = create_engine(SQLALCHEMY_DATBASE_URI, convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
-                                             autoflush=False,
-                                             bind=engine))
+                                         autoflush=False,
+                                         bind=engine))
 Base.query = db_session.query_property()
 
 def lemmatize(query):
-    wordlist =  [wnl.lemmatize(word).lower() for word in query]
+    wordlist = [wnl.lemmatize(word).lower() for word in query]
     return " ".join(wordlist)
 
 def init_db():
