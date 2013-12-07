@@ -51,19 +51,24 @@ def getuser():
           return redirect(url_for('getresults',query="999"))
     return render_template('index.html')
 
-def getdata(query):
+def getdata(query,):
     print "here"
     if query is not None:
-      parents,children,grand=fetchphrases(query)
+      parent,children,grand=fetchphrases(query)
       #Parents Dict: category:freq Children dict: parent_cat:[category:freq], Grand dict : child_cat:[category:freq]
-      categories={}
-      for phrase,freq in parents.items():
+      parentcategories={}
+      childcategories={}
+      grandcategories={}
+      categories = {}
+
+      for phrase,freq in parent.items():
         try:
           categories[str(phrase)]=freq
         except UnicodeEncodeError:
           categories[phrase]=freq
       #Search for each category in ngrams.lemmangrams, get question ids from ngrams 
       #and question text from questions table
+      """
       results={}
       for k,v in categories.items():
         ques=[]
@@ -77,17 +82,18 @@ def getdata(query):
         except UnicodeEncodeError:
           continue  
         results[k]=(list(set(ques)),v) 
-      
-      return results
+       """
+      return (parent,children,grand)
+      #return results
 
 @app.route('/data', methods=['GET', 'POST'])
 def data():
-    print "here inside data"
+    #print "here inside data"
     list_name = request.args.get("input_value")
     cat = getdata()
-    print "listname"
-    print list_name
-    print "/listname"
+    #print "listname"
+    #print list_name
+    #print "/listname"
     return render_template('index.html',categories=cat)
 
 @app.route('/results/<query>')
@@ -97,35 +103,12 @@ def getresults(query):
         categories=[]
       else:
         categories=getdata(query)
+        print "***********************************"
+        print categories[0]
+        print "***********************************"
     return render_template('index.html',categories=categories)
 
-@app.route('/user/<name>')
-def thanks(name):
-    message = "Thanks! Collect your glass and prepare to find your match."
-    return render_template('thankyou.html',status = message)
 
-@app.route('/upload', methods=['GET', 'POST'])
-def upload():
-    print "I am in upload"  
-    try:
-        data = [] 
-        data.append(name)
-        data.append("active")
-        data.append(radio)
-        data.append(colorbox)
-        data.append("follow")
-        data.append("matchpin")
-        data.append("expinterest")
-        data.append(email)
-        print data
-        matchdata = Matchglass(str(data[0]),str(data[1]),str(data[2]),str(data[3]),str(data[4]),str(data[5]),str(data[6]),str(data[7]))
-        db.session.add(matchdata)
-        db.session.commit()
-    except Exception,e:
-        flag = "failure"
-        print e
-    
-    return redirect(url_for('thanks',name="dummy"))
 if __name__ == "__main__":
     global name
     global email

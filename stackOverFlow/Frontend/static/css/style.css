@@ -1,18 +1,18 @@
-body            { font-family: sans-serif; background: #eee; color: #377ba8;}
+body            { font-family: sans-serif; color: #377ba8;}
 a, h1, h2       { color: #377ba8; }
 h1, h2          { font-family: 'Georgia', serif; margin: 0; }
 h1              { border-bottom: 2px solid #eee; }
 h2              { font-size: 1.2em; }
 .help			{font-size: 14px;color: #377ba8; border:1px solid; padding:5px;}
-.wrapper        {width:80%; margin:auto;}
+.wrapper        {width:100%; margin:auto;padding:10px;}
 .main_urls a 	{padding:20px;
-				 margin-top:30px;
+				 margin-top:10px;
 				}
-.query          {width:60%;}
+.query          {width:90%;}
 .main_urls      {padding: 20px;]
 
 				}
-.content  {margin-top:30px; width:80%;}
+.content       {margin-top:10px; width:90%;}
 
 .page           { margin: 2em auto; width: 35em; border: 5px solid #ccc;
                   padding: 0.8em; background: white; }
@@ -26,6 +26,8 @@ h2              { font-size: 1.2em; }
                   border: 1px solid #aacbe2; }
 .error          { background: #f0d6d6; padding: 0.5em; }
 #colors 		{margin-top:50px;display:none;}
-.left 			{display:block; float: left; width: 15%; height: 1000px}
-.right 			{display:block;}
-.answers		{display:block;}
+.left 			{display:block; float: left; width: auto;margin-left:30px;border-right-style:dotted;
+				border-width:1px;padding:5px;}
+.right 			{display:block;margin-left:20px;}
+.answers		{display:block;margin-left:20px;float:left;}
+.empty          {margin-left:30px;float:left;}

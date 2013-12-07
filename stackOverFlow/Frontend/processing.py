@@ -59,7 +59,7 @@ def categorize(phraseids):
 def fetchphrases(query):
 	results=searchphrases(query)
 	#results=removeurl(results)
-	print "Results",results
+	#print "Results",results
 	parents={}
 	children={}
 	categories=[]
@@ -131,7 +131,7 @@ def fetchphrases(query):
 
 
 if __name__=='__main__':
-	fetchphrases('big data')
+	fetchphrases('memory')
 
 
 

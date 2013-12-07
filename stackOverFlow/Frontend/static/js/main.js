@@ -1,5 +1,5 @@
 $( document ).ready(function() {
-	console.log("I am here");
+  console.log("I am here");
 	var selected_cat =[];
   	$( ".checkbox" ).click(function() {
   		alert($('#categories').val());
