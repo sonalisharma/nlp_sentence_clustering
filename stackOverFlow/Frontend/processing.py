@@ -76,6 +76,7 @@ def fetchphrases(query):
 	unigrams={}
 	bigrams={}
 	trigrams={}
+	dups=[]
 	for cat in results:
 		categories.append(cat[0])
 	for cat in results:
@@ -103,16 +104,19 @@ def fetchphrases(query):
 			for unigram in unigrams.keys():
 				for bigram,freq in bigrams.items():
 					if(unigram in bigram):
+						dups.append(bigram)
 						try:
 							children[unigram].append((bigram,freq))
 						except:
 							children[unigram]=[(bigram,freq)]
+
 					else:
 						parents[bigram]=freq
 			if(len(trigrams)!=0):
 				for bigram in bigrams.keys():
 					for trigram,freq in trigrams.items():
 						if(bigram in trigram):
+							dups.append(trigram)
 							try:
 								grand[bigram].append((trigram,freq))
 							except:
@@ -126,10 +130,12 @@ def fetchphrases(query):
 			for unigram in unigrams.keys():
 				for trigram,freq in trigrams.items():
 					if(unigram in trigram):
+						dups.append(trigram)
 						try:
 							children[unigram].append((trigram,freq))
 						except:
 							children[unigram]=(trigram,freq)
+						del trigrams[trigram]
 					else:
 						parents[trigram]=freq
 	elif(len(bigrams)!=0):
@@ -138,16 +144,22 @@ def fetchphrases(query):
 				for bigram in bigrams.keys():
 					for trigram,freq in trigrams.items():
 						if(bigram in trigram):
+							dups.append(trigram)
 							try:
 								children[bigram].append((trigram,freq))
 							except:
 								children[bigram]=(trigram,freq)
+							del trigrams[trigram]
 						else:
 							parents[trigram]=freq
 	elif(len(trigrams)!=0):
 		parents=trigrams
 	else:
 		parents={}
+
+	for d in dups:
+		del parents[d]
+
 	for key,values in children.items():
 		sorted_child=sorted(values,key=lambda x:x[1],reverse=True)
 		children[key]=sorted_child
@@ -163,7 +175,7 @@ def fetchphrases(query):
 
 
 if __name__=='__main__':
-	fetchphrases('memory')
+	fetchphrases('java interview questions')
 
 
 
