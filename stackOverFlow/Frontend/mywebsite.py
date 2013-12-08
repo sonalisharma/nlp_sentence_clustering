@@ -12,6 +12,7 @@ from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy.orm import scoped_session,sessionmaker
 from processing import fetchphrases
 from flask import json
+import re
 
 app = Flask(__name__)
 
@@ -72,6 +73,7 @@ def getdata(query,):
 
 @app.route('/data', methods=['GET', 'POST'])
 def data():
+    varhtml = ""
     #print "here inside data"
     #list_name = request.args.get("isLocked")
     #print "I am here inside data"
@@ -82,26 +84,56 @@ def data():
 
     results={}
     for p in phrase_data:
-      print str(p)
+      #print str(p)
+      newphrase = " ".join(str(p).split("_"))
       ques_ans=[]
+      ques_list=[]
       try:
         print "select q.ques_text,q.id,q.answer_text from ngrams n join questions\
-        q on n.questionid=q.id where n.lemmangrams='{}'".format(str(p))
+        q on n.questionid=q.id where n.lemmangrams='{}'".format(newphrase)
 
         res = engine.execute("select q.ques_text,q.id,q.answer_text from ngrams n join questions\
-        q on n.questionid=q.id where n.lemmangrams='{}'".format(str(p)))
+        q on n.questionid=q.id where n.lemmangrams='{}'".format(newphrase))
         print "After execute"
-        print res
+        #print res
         for r in res.fetchall():
-          print r
-          ques_ans.append([str(r['id']),str(r['ques_text']),str(r['answer_text'])])
-        results[str(p)]=ques_ans
+          print "inside featchall loop"
+          print r['id']
+          print r['ques_text']
+          print r['answer_text']
+          ques_id = re.sub(r"[\n\t\r]", " ",str(r['id']))
+          ques_text = re.sub(r"[\n\t\r]", " ",str(r['ques_text']))
+          ans_text = re.sub(r"[\n\t\r]", " ",str(r['answer_text']))
+          print "<LIST VIEW>"
+          print [ques_id,ques_text,ans_text]
+          print "</LIST VIEW>"
+          if ques_id in ques_list:
+            pass
+          else:
+            ques_list.append(ques_id)
+            ques_ans.append([ques_id,ques_text,ans_text])
+          #ques_ans.append()
+          print "REACHEEEEEEEDDDDD HEEEEREEEE"
+          results[str(newphrase)]=list(ques_ans)
+        print "*************RESULTS************"
+        print results
       except UnicodeEncodeError:
+        print "Caught in an exception"
         continue  
       #results[str(p)]=ques_ans
+    print "RESULTS"
     print results
+    
+    for r in results.keys():
+      divid = r.replace(" ","_")
+      varhtml= varhtml+"<div id=\""+divid+"\" >"
+      for questions in results[r]:
+        varhtml=varhtml+"<div id =\""+questions[0]+"_question\" onclick=\"show(\'"+questions[0]+"\')\"><h4>"+questions[1]+"</h4></div>\
+        <div id =\""+questions[0]+"_ans\" style=\"display:none;\">"+questions[2]+"</div></div>"
+
     #return str(ss)
-    return  "somthing"
+    print varhtml
+    return  varhtml
     #cat = getdata()
     #print "listname"
     #print list_name
