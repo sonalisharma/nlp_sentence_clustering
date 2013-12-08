@@ -1,6 +1,19 @@
 $( document ).ready(function() {
   console.log("inside js");
 
+$(".slideUpbox").click(function () {
+  console.log("here");
+   $(this).slideUp(2000);
+});
+
+
+  /* $(".question").click(function () {
+    console.log($(this))
+    $("#twitter .description").slideToggle("slow");
+    $("#twitter .minimize").show();
+
+}); */
+
   var someGlobalArray = new Array;
 
   $("input[type='checkbox']").click(function() {
@@ -20,40 +33,13 @@ $.ajax({
    type: 'POST',
    data: data,
   success: function(msg){
-              var myDiv = $('#answers'); // The place where you want to inser the template
+              var myDiv = $('.answers'); // The place where you want to inser the template
+              myDiv.html("");
               myDiv.html(msg);
             }
 });
   });
 
 
-  /*$('#category').click(function () {
-    console.log("Categories changed");
-            if ($('#category').is(':checked')) {
-                $.ajax({
-                    url: '/data',
-                    data: { isLocked: "Something" },
-                    type: 'POST',
-                    dataType: "json"
-                });
-            }
-}); */
 
   });
-/*
-
-function handleclick(cb){
-
-  var data = {
-      data: JSON.stringify({
-                        "value":$("input[type='checkbox']").val()
-                  })
-   };
-$.ajax({
-   url:"/data",
-   type: 'POST',
-   data: data,
-   success: function(msg){
-              alert(msg);
-            }
-}); */
