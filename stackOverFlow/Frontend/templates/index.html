@@ -30,7 +30,6 @@
 	    	{% if categories %}
 	    	<ul class="entries">
 	    	<h2>Categories</h2>
-	    	<label><input id="category" type="checkbox" name="all" value="all"/> All </label>
 			  {% for k_par,v_par in categories[0].items() %}
 			    <li>
 			    	<label><input id="category" type="checkbox" name={{ k_par }} value={{k_par|replace(" ", "_")}} />{{ k_par }} ({{ v_par }}) </label>
