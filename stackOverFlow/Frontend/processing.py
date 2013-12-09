@@ -63,7 +63,9 @@ def categorize(phraseids):
 	rows_phrase = con.fetchall()
 	n = [data[0] for data in rows_phrase]
 	d = Counter(n)
-	return d.most_common(5)
+	categories=d.most_common(5)
+	tag_categories(categories)
+	return categories
 
 def fetchphrases(query):
 	results=searchphrases(query)
@@ -158,7 +160,10 @@ def fetchphrases(query):
 		parents={}
 
 	for d in dups:
-		del parents[d]
+		try:
+			del parents[d]
+		except:
+			continue
 
 	for key,values in children.items():
 		sorted_child=sorted(values,key=lambda x:x[1],reverse=True)
@@ -174,8 +179,21 @@ def fetchphrases(query):
 	return parents,children,grand
 
 
+def tag_categories(results):
+	categories=[str(r[0]) for r in results]
+	sorted_tags=[]
+	tags=[]
+	for cat in categories:
+		text=nltk.word_tokenize(cat)
+		tags.append(nltk.pos_tag(text))
+	print "Categories and POS Tagging"
+	print tags
+	for tag in tags:
+		print tag
+
 if __name__=='__main__':
-	fetchphrases('java interview questions')
+	fetchphrases('big data')
+
 
 
 
