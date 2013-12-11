@@ -1,4 +1,3 @@
-from xml.dom import minidom  # read XML file
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -10,6 +9,7 @@ logging.root.setLevel(logging.DEBUG)
 import xml.etree.cElementTree as cElementTree
 
 
+## Creating database connections
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///tutorial_pp2.db'
 SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
 
@@ -17,26 +17,21 @@ engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True, pool_size=
 metadata = MetaData(bind=engine)
 Session = sessionmaker(bind=engine)
 session = Session()
-#db_session = scoped_session(sessionmaker(autocommit=False,
-#                                         autoflush=False,
-#                                         bind=engine))
-#Base = declarative_base()
-#Base.query = db_session.query_property()
 Base.metadata.create_all(bind=engine)
 
+## raw data files:
 XML_files = ['posts.xml']
 
+## HTML Tags to keep and remove
 VALID_TAGS = ['p', 'a', 'h2', 'blockquote', 'hr', 'em', 'strong']
 INVALID_TAGS = ['CODE', 'ul', 'ol', 'pre']
-"""
-unhandled tags:
 
-"""
 
-# reading stop words
+## stop words
 stop_word_file = "ir_dcs_gla_ac_uk_stop_words.txt"
 cached_stop_words = []
 
+## populate the stop word list
 with open(stop_word_file) as f:
     contents = f.readlines()
     for word in contents:
@@ -44,6 +39,9 @@ with open(stop_word_file) as f:
 
 
 def clean_html(value):
+    """
+    remove INVALID_TAGS tags and keep the data for VALID_TAGS
+    """
     soup = BeautifulSoup(value)
     for tag in soup.findAll(True):
         if tag.name in VALID_TAGS:
@@ -61,7 +59,11 @@ def remove_stop_words(sentence):
     return ' '.join([word for word in sentence.split() if word.lower() not in cached_stop_words])
 
 
-def 2clean_answers():
+def clean_answers():
+    """
+    Cleans up answer text and
+    if the questions does not have an answer, delete it
+    """
     from models import Questions
     for ques in session.query(Questions).all():
         logging.debug(ques.id)
@@ -92,8 +94,11 @@ def insert_data():
     session.commit()
 
 
-
 def read_xml():
+    """
+    read the xml file
+    add question and answers to the database
+    """
     logging.debug("read_xml entered")
     from models import Questions
     from models import Answers
@@ -127,45 +132,18 @@ def read_xml():
                 session.commit()
                 i = 0
             else:
-                i = i+1
+                i =+ 1
         session.commit()
-
-'''
-
-        xml_doc = minidom.parse(to_read_file)
-        logging.debug("xml_doc = minidom.parse(to_read_file)")
-        item_list = xml_doc.getElementsByTagName('row')
-        logging.debug("xml_doc.getElementsByTagName row")
-        for post in item_list:
-            logging.debug("for post in item_list")
-            if int(post.attributes['PostTypeId'].value) == 1:  # is a questions
-                try:
-                    post.attributes['AcceptedAnswerId']
-                    print post.attributes['Id'].value
-                    q = Questions(ques_id=int(post.attributes['Id'].value),
-                                  ques_text=post.attributes['Title'].value,
-                                  answer_id=post.attributes['AcceptedAnswerId'].value)
-                    session.add(q)
-                    session.commit()
-                except:  # is an answer
-                    pass
-            elif int(post.attributes['PostTypeId'].value) == 2:
-                try:
-                    print post.attributes['Id'].value
-                    a = Answers(ans_id=int(post.attributes['Id'].value),
-                                ans_text=post.attributes['Body'].value)
-                    session.add(a)
-                    session.commit()
-                except:
-                    pass
-'''
 
 
 def merge_tables():
+    """
+    add answers to the questions table
+    """
     from models import Questions
     from models import Answers
+    commit_counter = 0
     for ques in session.query(Questions).all():
-        commit_counter = 0
         logging.debug(ques.id)
         ans = session.query(Answers).filter(Answers.id == ques.answer_id).first()
         if ans:
@@ -178,18 +156,20 @@ def merge_tables():
             commit_counter = 0
         else:
             commit_counter += 1
-    #session.query(Answers).all().delete()  # reduce the size of the db
     session.commit()
 
 
 def delete_extras():
+    """
+    Delete the answer table after all the data has been extracted from it
+    """
     from models import Answers
     session.query(Answers).delete()
     session.commit()
 
 
 if __name__ == "__main__":
-    #read_xml()
-    #merge_tables()
-    #delete_extras()
+    read_xml()
+    merge_tables()
+    delete_extras()
     clean_answers()
