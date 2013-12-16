@@ -43,9 +43,6 @@ nltk python package
 
 Instructions to run and use the code:
 1. Clone the repository from https://github.com/sonalisharma/nlp_sentence_clustering
-2. Create a mysql database and name it “stackoverflow”. Create the username and password as nlp_user and nlp_user
-3. On the terminal, go to /nlp_sentence_clustering/stackOverflow and run ‘python insert_clean_so_data.py’
-4. On the terminal, go to : /nlp_sentence_clustering/stackOverflow/Frontend/ and run ‘python insert_tables.py’
-5. On the terminal, go to : /nlp_sentence_clustering/stackOverflow/Frontend/ and run ‘python mywebsite.py’
-6. Go to http://localhost:5000 and enter your query to view the results.
-7. On the console, you will be able to see the POS tags of your categories
+2. On the terminal, go to : /nlp_sentence_clustering/stackOverflow/Frontend/ and run ‘python mywebsite.py’
+3. Go to http://localhost:5000 and enter your query to view the results.
+4. On the console, you will be able to see the POS tags of your categories
