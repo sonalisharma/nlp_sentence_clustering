@@ -45,7 +45,7 @@ def searchphrases(query):
 	phraseids = []
 	ngramids=[]
 	words=query_lemmatized.split()
-	query_ngram = "select id from ngrams where lower(lemmangrams) like lower('%{}%')".format(words[0])
+	query_ngram = "select id from ngrams where lower(lemmangrams) like lower('%{}%')".format(query_lemmatized)+" or lower(lemmangrams) like lower('%{}%')".format(words[0])
 	for word in words[1:]:
 		query_ngram=query_ngram+" or lower(lemmangrams) like lower('%{}%')".format(word)
 	con = it.engine.execute(query_ngram)
@@ -63,14 +63,14 @@ def categorize(phraseids):
 	rows_phrase = con.fetchall()
 	n = [data[0] for data in rows_phrase]
 	d = Counter(n)
-	categories=d.most_common(5)
+	categories=d.most_common(20)
 	tag_categories(categories)
 	return categories
 
 def fetchphrases(query):
 	results=searchphrases(query)
 	#results=removeurl(results)
-	print "Results",results
+	#print "Results",results
 	parents=OrderedDict()
 	children=OrderedDict()
 	grand=OrderedDict()
@@ -98,7 +98,7 @@ def fetchphrases(query):
 			else:
 				print "Rest in categories"
 		except:
-			print "Exception in ",phrase
+			#print "Exception in ",phrase
 			print traceback.format_exc()
 	if(len(unigrams)!=0):
 		parents=unigrams
@@ -122,12 +122,12 @@ def fetchphrases(query):
 							try:
 								grand[bigram].append((trigram,freq))
 							except:
-								grand[bigram]=(trigram,freq)
+								grand[bigram]=[(trigram,freq)]
 						else:
 							try:
 								children[bigram].append((trigram,freq))
 							except:
-								children[bigram]=(trigram,freq)
+								children[bigram]=[(trigram,freq)]
 		elif(len(trigrams)!=0):
 			for unigram in unigrams.keys():
 				for trigram,freq in trigrams.items():
@@ -136,7 +136,7 @@ def fetchphrases(query):
 						try:
 							children[unigram].append((trigram,freq))
 						except:
-							children[unigram]=(trigram,freq)
+							children[unigram]=[(trigram,freq)]
 						del trigrams[trigram]
 					else:
 						parents[trigram]=freq
@@ -150,7 +150,7 @@ def fetchphrases(query):
 							try:
 								children[bigram].append((trigram,freq))
 							except:
-								children[bigram]=(trigram,freq)
+								children[bigram]=[(trigram,freq)]
 							del trigrams[trigram]
 						else:
 							parents[trigram]=freq
@@ -172,10 +172,6 @@ def fetchphrases(query):
 	for key,values in grand.items():
 		sorted_gchild=sorted(values,key=lambda x:x[1],reverse=True)
 		grand[key]=sorted_gchild
-
-	print "Parents",parents
-	print "Children",children
-	print "Grand",grand
 	return parents,children,grand
 
 
@@ -186,8 +182,9 @@ def tag_categories(results):
 	for cat in categories:
 		text=nltk.word_tokenize(cat)
 		tags.append(nltk.pos_tag(text))
+	print "***********************************"
 	print "Categories and POS Tagging"
-	print tags
+	print "***********************************"
 	for tag in tags:
 		print tag
 
