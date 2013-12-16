@@ -1,3 +1,5 @@
+# This file is used for front end application
+
 import os
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -5,7 +7,6 @@ from flask import render_template
 from werkzeug import secure_filename
 from flask import Flask, request, redirect, url_for
 from flask import send_from_directory   
-from pybtex.database.input import bibtex
 from sqlalchemy import distinct, Table
 from itertools import izip
 from sqlalchemy import create_engine, MetaData, Table
@@ -16,7 +17,6 @@ import re
 
 app = Flask(__name__)
 
-#SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
 
 SQLALCHEMY_DATABASE_URI='sqlite:///tutorial.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
@@ -33,8 +33,6 @@ db_session = scoped_session(sessionmaker(autocommit=False,
 db = SQLAlchemy(app)
 eng = db.create_engine(SQLALCHEMY_DATABASE_URI)
 
-#db.drop_all()
-#db.create_all()
 app.debug = True
 metadata = MetaData(bind=engine)
 
@@ -57,33 +55,25 @@ def getdata(query,):
       childcategories={}
       grandcategories={}
       categories = {}
+      #Search for each category in ngrams.lemmangrams, get question ids from ngrams 
+      #and question text from questions table
 
       for phrase,freq in parent.items():
         try:
           categories[str(phrase)]=freq
         except UnicodeEncodeError:
           categories[phrase]=freq
-      #Search for each category in ngrams.lemmangrams, get question ids from ngrams 
-      #and question text from questions table
-      
-     
       return (parent,children,grand)
 
 
 @app.route('/data', methods=['GET', 'POST'])
 def data():
     varhtml = ""
-    #print "here inside data"
-    #list_name = request.args.get("isLocked")
-    #print "I am here inside data"
-    #print list_name
-
     data = json.loads(request.form.get('data'))
     phrase_data = data['value']
 
     results={}
     for p in phrase_data:
-      #print str(p)
       newphrase = " ".join(str(p).split("_"))
       ques_ans=[]
       ques_list=[]
@@ -91,7 +81,7 @@ def data():
 
         res = engine.execute("select q.ques_text,q.id,q.answer_text from ngrams n join questions\
         q on n.questionid=q.id where n.lemmangrams='{}'".format(newphrase))
-        #print res
+
         for r in res.fetchall():
           ques_id = re.sub(r"[\n\t\r]", " ",str(r['id']))
           ques_text = re.sub(r"[\n\t\r]", " ",str(r['ques_text']))
@@ -101,12 +91,10 @@ def data():
           else:
             ques_list.append(ques_id)
             ques_ans.append([ques_id,ques_text,ans_text])
-          #ques_ans.append()
           results[str(newphrase)]=list(ques_ans)
       except UnicodeEncodeError:
         print "Caught in an exception"
         continue  
-      #results[str(p)]=ques_ans
     
     for r in results.keys():
       divid = r.replace(" ","_")
@@ -128,10 +116,6 @@ def getresults(query):
 
 
 if __name__ == "__main__":
-    global name
-    global email
-    global radio
-    global colorbox
     app.run()
 
 

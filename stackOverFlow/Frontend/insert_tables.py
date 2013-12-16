@@ -1,3 +1,10 @@
+# Initial loading of data into tables
+# =====================================
+# This code is used to populate the ngrams table in the database
+# We read all answers from the questions table, tokenize them,
+# lemmatize and store unigram, bgrams amd trigrams in ngrams table.
+# The table also stores question id.
+#
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -8,13 +15,9 @@ from nltk.stem import WordNetLemmatizer as WNL
 from models import LemmaTemp,Base
 
 wnl=WNL()
-#SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
+# Initializing database
 SQLALCHEMY_DATABASE_URI = 'sqlite:///tutorial.db'
-#SQLALCHEMY_DATABASE_URI = 'mysql://nlp_user:nlp_user@localhost/stackoverflow'
-#SQLALCHEMY_DATABASE_URI = 'sqlite:///tutorial.db'
-# engine = create_engine('mysql+mysqlconnector://root@127.0.0.1/mainserver?charset=utf8&use_unicode=0', paramstyle='format', echo=True)
 
-#engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True, pool_recycle=7200, paramstyle='format')
 engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
@@ -22,6 +25,9 @@ db_session = scoped_session(sessionmaker(autocommit=False,
 Base.query = db_session.query_property()
 
 def lemmatize(query):
+    """
+    Lemmatizing the input text
+    """
     wordlist = [wnl.lemmatize(word).lower() for word in query]
     return " ".join(wordlist)
 
@@ -37,53 +43,59 @@ def init_db():
 
 
 def newPhraseInfo(phrase):
+    """
+    This method is used to store the number of Phrases
+    the set of associated question ids and the phrase itself in the formm
+    of dictionary. 
+    """
     return {"count":0,
         "ids":set(),
         "phrase":phrase
         }
 
-def insert_db():
-    from models import Ngrams
-    ngrams=Ngrams.query.all()
-    entries=[]
-    for ngram in ngrams:
-        phrase=str(ngram.ngrams)
-        if len(phrase.split())==1:
-            entries.append((ngram.id,phrase))
-    #entries=[('dogs',1),('cats',2),('jumping',3),('happened',4),('best',5),('worst',6)]
-    print entries[:10]
-    wnl=WNL()
-    for e in entries:
-        original=e[1]
-        lemma=wnl.lemmatize(original)
-        wordid=e[0]
-        l=LemmaTemp(lemma,original,wordid)
-        db_session.add(l)
-        db_session.commit()
-
 def insertdata():
+    """
+    Method is used to insert data into ngrams table.
+    Input:
+    Data read from questions table. Format -
+    questionid | questiontext | answer id | answer text | answer w/o stopword 
+
+    Output:
+    Data inserted in ngrams table
+    Format -
+    ngrams id | question id | ngram | lemmatized ngram
+
+    e.g.
+    1|4|explicit|explicit
+    2|4|explicit cast|explicit cast
+    3|4|explicit cast double|explicit cast double
+    4|4|cast|cast
+    5|4|cast double|cast double
+    6|4|cast double isnt|cast double isnt
+
+    """
     import models   
     from models import Ngrams
     from models import Phrases
     allphrases = {}
     phrase_index= {}
+    # Reading 100000 questions for this project. Original data was 7GB 
+    # and very large to process.
     r = engine.execute('select * from questions where id < 100000')
     data = r.fetchall()
     for row in data:
         answer = row[4]
+        # Tokenizing answer
         ans = answer.split()
         for i in range(len(ans)):
+            # Running inner loop to generate trigrams
             for j in range(i+1, len(ans)+1):
                 phrase = " ".join(ans[i:j])
-                # Getting only 4 grams instead of all ngrams
+                # Getting only 3 grams instead of all ngrams
                 if len(phrase.split()) < 4:
                     print row[0]
-                    # print phrase
                     lemmaphrase = lemmatize(ans[i:j])
                     ng = Ngrams(row[0],phrase, lemmaphrase)
-                    #print "------------"
-                    #print ng.lemmangrams
-                    #print "------------"
                     db_session.add(ng)
                     phrase = phrase.lower()
                     if phrase not in allphrases:
@@ -92,22 +104,9 @@ def insertdata():
                     phrase_index[phrase]["count"] += 1
                     phrase_index[phrase]["ids"].add(str(row[0]))
     db_session.commit()
-    i = 0
-    """
-    for unique_phrases in phrase_index.keys():
-        l = list(phrase_index[unique_phrases]["ids"])
-        phraseids = '*'.join(l)
-        #print i
-        i+=1
-        ph = Phrases(phrase_index[str(unique_phrases)]["phrase"], phrase_index[unique_phrases]["count"], phraseids)
-        #print ph
-        db_session.add(ph)
-        db_session.commit() 
-    """
 
 if __name__=='__main__':
     init_db()
     Base.metadata.bind=engine
     insertdata()
-    #insert_db()
 

@@ -1,3 +1,11 @@
+# Processing data 
+# =====================================
+# This code is used to implement the Findex algorithm and POS tagging
+# of resultant categries.
+# The input is the user query and output is the list
+# hierarchical categories which are displayed on Front end
+#
+
 import nltk
 from nltk.corpus import stopwords
 from sqlalchemy import create_engine
@@ -20,16 +28,27 @@ limit=0
 
 
 def removestopwords(query):
+	"""
+	Removing stop words from user query
+	"""
     wordlist = [word for word in query.split() if word not in stopwords.words('english')]
     return " ".join(wordlist)
 
 
 def lemmatize(query):
+	"""
+	Lemmatizing terms in user query
+	"""
     wordlist = [wnl.lemmatize(word) for word in query.split()]
     return " ".join(wordlist)
 
 
 def removeurl(wordlist):
+	"""
+	Removing text containing http. This is done in addition to removing
+	stop words because stack exchnage data contains a lot of http links
+	We did not want to include them as categories.
+	"""
 	newlist=[]
 	for w in wordlist:
 		phrases=str(w[0]).split()
@@ -40,6 +59,9 @@ def removeurl(wordlist):
 	return newlist
 
 def searchphrases(query): 
+	"""
+	Fetching all the phrases that contain words in user query.
+	"""
 	query_nostopwords = removestopwords(query)
 	query_lemmatized = lemmatize(query_nostopwords) #look like
 	phraseids = []
@@ -58,6 +80,9 @@ def searchphrases(query):
 	return results
 
 def categorize(phraseids):
+	"""
+	Frequency count of phrases using python counters
+	"""
 	query = "select lemmangrams from ngrams where id in ({})".format(",".join(phraseids))
 	con = it.engine.execute(query)
 	rows_phrase = con.fetchall()
@@ -68,9 +93,15 @@ def categorize(phraseids):
 	return categories
 
 def fetchphrases(query):
+	"""
+	This method is used to create a hierarchy of phrases.
+	Unigrams in the resultant phrases are 
+	considered as the top level category. Bigrams containing the unigram 
+	are considered as the second level hierarchy 
+	and similarly trigrams containing the bigram are considered 
+	as level three hierarchy.
+	"""
 	results=searchphrases(query)
-	#results=removeurl(results)
-	#print "Results",results
 	parents=OrderedDict()
 	children=OrderedDict()
 	grand=OrderedDict()
@@ -98,7 +129,6 @@ def fetchphrases(query):
 			else:
 				print "Rest in categories"
 		except:
-			#print "Exception in ",phrase
 			print traceback.format_exc()
 	if(len(unigrams)!=0):
 		parents=unigrams
@@ -189,6 +219,8 @@ def tag_categories(results):
 		print tag
 
 if __name__=='__main__':
+	# Sample query, this method is called difrectly from Flask app.py after
+	# user enters the query
 	fetchphrases('big data')
 
 
