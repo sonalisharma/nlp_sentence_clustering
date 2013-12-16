@@ -50,7 +50,6 @@ def getuser():
     return render_template('index.html')
 
 def getdata(query,):
-    print "here"
     if query is not None:
       parent,children,grand=fetchphrases(query)
       #Parents Dict: category:freq Children dict: parent_cat:[category:freq], Grand dict : child_cat:[category:freq]
@@ -147,9 +146,6 @@ def getresults(query):
         categories=[]
       else:
         categories=getdata(query)
-        print "***********************************"
-        print categories[0]
-        print "***********************************"
     return render_template('index.html',categories=categories)
 
 
