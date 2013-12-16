@@ -88,56 +88,34 @@ def data():
       ques_ans=[]
       ques_list=[]
       try:
-        print "select q.ques_text,q.id,q.answer_text from ngrams n join questions\
-        q on n.questionid=q.id where n.lemmangrams='{}'".format(newphrase)
 
         res = engine.execute("select q.ques_text,q.id,q.answer_text from ngrams n join questions\
         q on n.questionid=q.id where n.lemmangrams='{}'".format(newphrase))
-        print "After execute"
         #print res
         for r in res.fetchall():
-          print "inside featchall loop"
-          print r['id']
-          print r['ques_text']
-          print r['answer_text']
           ques_id = re.sub(r"[\n\t\r]", " ",str(r['id']))
           ques_text = re.sub(r"[\n\t\r]", " ",str(r['ques_text']))
           ans_text = re.sub(r"[\n\t\r]", " ",str(r['answer_text']))
-          print "<LIST VIEW>"
-          print [ques_id,ques_text,ans_text]
-          print "</LIST VIEW>"
           if ques_id in ques_list:
             pass
           else:
             ques_list.append(ques_id)
             ques_ans.append([ques_id,ques_text,ans_text])
           #ques_ans.append()
-          print "REACHEEEEEEEDDDDD HEEEEREEEE"
           results[str(newphrase)]=list(ques_ans)
-        print "*************RESULTS************"
-        print results
       except UnicodeEncodeError:
         print "Caught in an exception"
         continue  
       #results[str(p)]=ques_ans
-    print "RESULTS"
-    print results
     
     for r in results.keys():
       divid = r.replace(" ","_")
       varhtml= varhtml+"<div id=\""+divid+"\" >"
       for questions in results[r]:
-        varhtml=varhtml+"<div id =\""+questions[0]+"_question\" onclick=\"show(\'"+questions[0]+"\')\"><h4>"+questions[1]+"</h4></div>\
-        <div id =\""+questions[0]+"_ans\" style=\"display:none;\">"+questions[2]+"</div></div>"
+        varhtml=varhtml+"<div id =\""+questions[0]+"_question\" style=\"cursor:pointer;\" onclick=\"show(\'"+questions[0]+"\')\"><h4>"+questions[1]+"</h4></div>\
+        <div id =\""+questions[0]+"_ans\" style=\"display:none; font-size:14px;margin-left:15px;\">"+questions[2]+"</div></div>"
 
-    #return str(ss)
-    print varhtml
     return  varhtml
-    #cat = getdata()
-    #print "listname"
-    #print list_name
-    #print "/listname"
-    #return render_template('index.html',categories=cat)
 
 @app.route('/results/<query>')
 def getresults(query):
@@ -154,8 +132,6 @@ if __name__ == "__main__":
     global email
     global radio
     global colorbox
-    #db.drop_all()
-    #db.create_all()
     app.run()
 
 
