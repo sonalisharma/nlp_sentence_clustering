@@ -3,6 +3,8 @@ Stack Search
 
 StackOverflow Search Clustering - NLP Final Project
 
+Project Team Members: Sonali Sharma, Shubham Goel, Priya Iyer
+
 
  There are a number of search engines available today. When users type in a query to search for something over internet, they are often overwhelmed with the a large amount of results. It often becomes difficult browse through this list and fetch the most relevant item. Since the aim of our project was to improve user search using NLP techniques, we decided to implement an algorithm that would improve use search using NLP techniques and provide a mechanism to categorise search results into relevant categories, thereby making it easy for the end user to navigate to the category on interest and look for results within that category. We decided to implement Findex algorithm in this project. Findex is a text categorization algorithm that provides an overview of search results as categories where categories are made up of most frequent words and phrases in the resulting document set.  The algorithm is based on the assumption that the most frequently used word/phrases in a set of documents capture major topics very well. We used the stackoverflow data to implement the algorithm.
  
