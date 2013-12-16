@@ -43,6 +43,8 @@ nltk python package
 
 Instructions to run and use the code:
 1. Clone the repository from https://github.com/sonalisharma/nlp_sentence_clustering
-2. On the terminal, go to : /nlp_sentence_clustering/stackOverflow/Frontend/ and run ‘python mywebsite.py’
-3. Go to http://localhost:5000 and enter your query to view the results.
-4. On the console, you will be able to see the POS tags of your categories
+2. Goto folder stackOverFlow/Frontend/
+3. Open link http://people.ischool.berkeley.edu/~sonali.sharma/nlp/stackOverFlow/Frontend/ and download database tutorial.db
+4. On the terminal, go to : /nlp_sentence_clustering/stackOverflow/Frontend/ and run ‘python mywebsite.py’
+5. Go to http://localhost:5000 and enter your query to view the results.
+6. On the console, you will be able to see the POS tags of your categories
